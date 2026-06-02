@@ -1,0 +1,114 @@
+Note: No changes required in NGIX Config file/etc/nginx/nginx.conf
+/etc/nginx/sites-available/share.chartiq.com.conf
+/etc/nginx/sites-available/services.chartiq.com.confThe SSL renewal is designed to work through the current symlink.Cert Deployment Steps 
+-----------------------------------------------------------------------------------------
+
+Step-1. Create a bew directory:Create a new SSL directory for the renewal.
+sudo mkdir -p /etc/nginx/ssl/2026
+
+-----------------------------------------------------------------------------------------
+
+Step-2. Copy New Certificate Files: 
+Copy the following files received from the certificate team:chartiq.com.crt
+DigiCertGlobalG2TLSRSASHA2562020CA1.crt
+DigiCertGlobalRootG2.crt
+chartiq.keyinto:     /etc/nginx/ssl/2026
+
+-----------------------------------------------------------------------------------------
+
+Step-3 Validate Certificate and Private key Match 
+
+Verify that the private key belongs to the certificate.
+
+openssl rsa -noout -modulus -in /etc/nginx/ssl/2026/chartiq.key | openssl md5
+openssl x509 -noout -modulus -in /etc/nginx/ssl/2026/chartiq.com.crt | openssl md5
+
+Expected:Both MD5 values must be identical 
+Example:
+MD5(stdin)= abc123456
+MD5(stdin)= abc123456If
+
+values differ, STOP and contact the certificate provider
+
+
+-----------------------------------------------------------------------------------------
+
+Step-4 Create chained certificate
+
+Inside:
+
+/etc/nginx/ssl/2026cat chartiq.com.crt DigiCertGlobalG2TLSRSASHA2562020CA1.crt > chartiq_com.chained.crt
+
+Verify:grep -c "BEGIN CERTIFICATE" chartiq_com.chained.crt
+
+Expected:2
+
+-----------------------------------------------------------------------------------------
+
+Step-5  Set permissions
+chown root:root *
+chmod 600 chartiq.key
+chmod 640 chartiq_com.chained.crt
+
+-----------------------------------------------------------------------------------------
+
+Step-6 Verify current symlink
+
+ls -l /etc/nginx/ssl/current
+
+Should show something like:
+current -> /etc/nginx/ssl/2025
+
+-----------------------------------------------------------------------------------------
+
+Step-7  Switch symlink
+
+sudo rm /etc/nginx/ssl/current
+
+sudo ln -s /etc/nginx/ssl/2026 /etc/nginx/ssl/current
+
+Verify:
+ls -l /etc/nginx/ssl/current
+
+Expected:current -> /etc/nginx/ssl/2026
+
+-----------------------------------------------------------------------------------------
+
+Step-8 Validate NGINX
+
+Critical step
+
+sudo nginx -t
+
+Expected:
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+
+If this fails, stop and share the output
+
+-----------------------------------------------------------------------------------------
+
+.Step-9  Reload / Restart NGINX
+
+Since only certificates changed:
+
+sudo systemctl reload nginx
+(or) follow team procedure:
+sudo systemctl restart nginx
+
+-----------------------------------------------------------------------------------------
+
+Step-10 Verify new certificate
+
+Check locally:
+
+openssl s_client \
+-connect localhost:443 \
+-servername share.chartiq.com \
+</dev/null 2>/dev/null | \
+openssl x509 -noout -dates
+
+Look at:notAfter=
+
+Which Confirm it shows the new expiry date.
+
+-----------------------------------------------------------------------------------------
