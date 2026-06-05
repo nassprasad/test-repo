@@ -1,0 +1,5431 @@
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\.tflint.hcl =====
+
+plugin "terraform" {
+  enabled = true
+  preset  = "recommended"
+}
+
+plugin "aws" {
+  enabled = true
+  version = "0.32.0"
+  source  = "github.com/terraform-linters/tflint-ruleset-aws"
+}
+
+config {
+  module = true
+  force  = false
+}
+
+# Enforce naming conventions
+rule "terraform_naming_convention" {
+  enabled = true
+
+  variable {
+    format = "snake_case"
+  }
+
+  locals {
+    format = "snake_case"
+  }
+
+  output {
+    format = "snake_case"
+  }
+
+  resource {
+    format = "snake_case"
+  }
+
+  module {
+    format = "snake_case"
+  }
+
+  data {
+    format = "snake_case"
+  }
+}
+
+# Require documentation
+rule "terraform_documented_outputs" {
+  enabled = true
+}
+
+rule "terraform_documented_variables" {
+  enabled = true
+}
+
+# Standard module structure
+rule "terraform_standard_module_structure" {
+  enabled = true
+}
+
+# Type constraints
+rule "terraform_typed_variables" {
+  enabled = true
+}
+
+# Unused declarations
+rule "terraform_unused_declarations" {
+  enabled = true
+}
+
+# Deprecated syntax
+rule "terraform_deprecated_interpolation" {
+  enabled = true
+}
+
+rule "terraform_deprecated_index" {
+  enabled = true
+}
+
+# Required version
+rule "terraform_required_version" {
+  enabled = true
+}
+
+rule "terraform_required_providers" {
+  enabled = true
+}
+
+# Workspace usage
+rule "terraform_workspace_remote" {
+  enabled = true
+}
+
+# Comment syntax
+rule "terraform_comment_syntax" {
+  enabled = true
+}
+
+# Module pinned source
+# Disabled because we reference local modules
+rule "terraform_module_pinned_source" {
+  enabled = false
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\CONTRIBUTING.md =====
+
+# Contributing to ChartIQ AWS Infrastructure
+
+Thank you for contributing! This document provides guidelines for contributing to this repository.
+
+## Code of Conduct
+
+- Be respectful and inclusive
+- Provide constructive feedback
+- Focus on what is best for the community
+
+## Getting Started
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/my-feature`
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## Development Workflow
+
+### 1. Local Testing
+
+```bash
+# Navigate to environment
+cd environments/dev
+
+# Format code
+make fmt
+
+# Validate configuration
+make validate
+
+# Run linting
+make lint
+
+# Run security scan
+make sec
+
+# Create plan
+make plan
+
+# Review plan carefully before applying
+```
+
+### 2. Submitting Changes
+
+1. **Create a branch** from `main`
+   ```bash
+   git checkout -b feature/add-new-distribution
+   ```
+
+2. **Make your changes**
+   - Update YAML config files
+   - Modify Terraform modules if needed
+   - Update documentation
+
+3. **Test your changes**
+   ```bash
+   cd environments/dev
+   make pr  # Runs fmt, validate, lint, sec
+   make plan
+   ```
+
+4. **Commit with clear messages**
+   ```bash
+   git add .
+   git commit -m "feat: add support for custom cache policies"
+   ```
+
+5. **Push and create PR**
+   ```bash
+   git push origin feature/add-new-distribution
+   ```
+
+## Commit Message Format
+
+Use [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+<type>(<scope>): <description>
+
+[optional body]
+
+[optional footer]
+```
+
+### Types
+
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation changes
+- `style`: Code style changes (formatting)
+- `refactor`: Code refactoring
+- `test`: Adding or updating tests
+- `chore`: Maintenance tasks
+
+### Examples
+
+```
+feat(cloudfront): add support for custom error responses
+fix(s3): correct bucket policy for OAC
+docs(readme): update quick start guide
+refactor(modules): simplify distribution module
+```
+
+## Pull Request Guidelines
+
+### PR Title
+
+- Use conventional commit format
+- Be clear and descriptive
+- Example: `feat: add support for Lambda@Edge custom functions`
+
+### PR Description
+
+Include:
+
+1. **What** - What changes were made
+2. **Why** - Why these changes are needed
+3. **How** - How to test the changes
+4. **Impact** - Which environments/resources are affected
+
+Template:
+
+```markdown
+## Description
+Brief description of changes
+
+## Motivation
+Why is this change needed?
+
+## Testing
+How was this tested?
+- [ ] Ran `make pr` successfully
+- [ ] Created plan in dev environment
+- [ ] Verified no unexpected changes
+
+## Checklist
+- [ ] Code follows project style
+- [ ] Documentation updated
+- [ ] Tests pass
+- [ ] No breaking changes (or documented)
+```
+
+### Review Process
+
+1. Automated checks must pass:
+   - Terraform format
+   - Terraform validate
+   - tflint
+   - tfsec
+
+2. Manual review required for:
+   - Production changes
+   - Module modifications
+   - Breaking changes
+
+3. Approval requirements:
+   - Dev: 1 approval
+   - Staging: 1 approval
+   - Prod: 2 approvals + manual testing
+
+## Coding Standards
+
+### Terraform
+
+1. **Formatting**
+   ```bash
+   terraform fmt -recursive .
+   ```
+
+2. **Naming Conventions**
+   - Resources: `snake_case`
+   - Variables: `snake_case`
+   - Modules: `kebab-case`
+
+3. **Documentation**
+   - All variables must have descriptions
+   - All outputs must have descriptions
+   - Complex logic requires comments
+
+4. **Module Structure**
+   ```
+   modules/my-module/
+   ├── README.md          # Module documentation
+   ├── main.tf            # Main resources
+   ├── variables.tf       # Input variables
+   ├── outputs.tf         # Output values
+   └── versions.tf        # Provider versions
+   ```
+
+### YAML Configuration
+
+1. **Consistent Indentation**
+   - Use 2 spaces
+   - No tabs
+
+2. **Comments**
+   - Explain non-obvious settings
+   - Document required vs. optional fields
+
+3. **Validation**
+   - Test with `terraform validate`
+   - Check for syntax errors
+
+## Testing
+
+### Required Tests
+
+1. **Syntax Validation**
+   ```bash
+   make validate
+   ```
+
+2. **Linting**
+   ```bash
+   make lint
+   ```
+
+3. **Security Scanning**
+   ```bash
+   make sec
+   ```
+
+4. **Plan Review**
+   ```bash
+   make plan
+   # Review output for unexpected changes
+   ```
+
+### Test Environments
+
+- **Dev**: For all changes
+- **Staging**: Before production
+- **Prod**: Only after staging validation
+
+## Documentation
+
+### What to Document
+
+1. **New Features**
+   - Update README.md
+   - Add to CONFIGURATION.md
+   - Include examples in EXAMPLES.md
+
+2. **Configuration Changes**
+   - Update affected documentation
+   - Provide migration guide if breaking
+
+3. **Architecture Changes**
+   - Update ARCHITECTURE.md
+   - Include diagrams if needed
+
+### Documentation Standards
+
+- Use Markdown
+- Include code examples
+- Keep explanations clear and concise
+- Update table of contents
+
+## Security
+
+### Reporting Security Issues
+
+- **DO NOT** create public issues for security vulnerabilities
+- Email security@example.com
+- Include detailed description
+- Wait for response before public disclosure
+
+### Security Best Practices
+
+1. **Never commit secrets**
+   - No API keys
+   - No passwords
+   - No private keys
+
+2. **Use secure defaults**
+   - HTTPS only
+   - Encryption enabled
+   - Public access blocked
+
+3. **Follow least privilege**
+   - Minimal IAM permissions
+   - Scoped resource access
+
+## Release Process
+
+### Versioning
+
+We use [Semantic Versioning](https://semver.org/):
+
+- **MAJOR**: Breaking changes
+- **MINOR**: New features (backward compatible)
+- **PATCH**: Bug fixes
+
+### Creating a Release
+
+1. Update CHANGELOG.md
+2. Tag release: `git tag v1.2.3`
+3. Push tags: `git push --tags`
+4. Create GitHub release
+5. Deploy to environments in order: dev → staging → prod
+
+## Getting Help
+
+- **Questions**: Create a GitHub issue with `question` label
+- **Bug Reports**: Create a GitHub issue with `bug` label
+- **Feature Requests**: Create a GitHub issue with `enhancement` label
+- **Urgent Issues**: Contact the Platform Team
+
+## Resources
+
+- [Terraform Best Practices](https://www.terraform-best-practices.com/)
+- [AWS Well-Architected Framework](https://aws.amazon.com/architecture/well-architected/)
+- [CloudFront Best Practices](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/best-practices.html)
+
+## License
+
+By contributing, you agree that your contributions will be licensed under the same license as the project (see LICENSE file).
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\IMPLEMENTATION_SUMMARY.md =====
+
+# ChartIQ Lambda + API Gateway Implementation Summary
+
+## Changes Implemented
+
+### 1. IAM Role Configuration ✅
+**Status:** Already correct
+- **File:** `.github/workflows/lambda-deployments.yaml`
+- **IAM Role:** `${{ secrets.AWS_ROLE_ARN }}`
+- **Details:** Lambda deployments already use the same IAM role as CloudFront deployments (admin permissions)
+
+### 2. File Renaming for Clarity ✅
+**Renamed files for better organization:**
+- `environments/dev/outputs.tf` → `environments/dev/distribution-outputs.tf`
+- `environments/staging/outputs.tf` → `environments/staging/distribution-outputs.tf`
+- `environments/prod/outputs.tf` → `environments/prod/distribution-outputs.tf`
+- `environments/dev/lambda-outputs.tf` - Already properly named (kept as-is)
+
+**Rationale:** Clear naming convention distinguishes CloudFront distribution outputs from Lambda outputs.
+
+### 3. API Gateway Module Creation ✅
+**Created:** `modules/api-gateway/`
+
+**Files:**
+- `main.tf` - API Gateway REST API, deployment, stage, integration with Lambda
+- `variables.tf` - Complete configuration options (throttling, logging, X-Ray, etc.)
+- `outputs.tf` - API ID, ARN, execution ARN, invoke URL, stage information
+
+**Key Features:**
+- REGIONAL endpoint configuration
+- Lambda proxy integration (AWS_PROXY)
+- CloudWatch logging (access logs + execution logs)
+- X-Ray tracing support
+- Throttling configuration
+- Automatic Lambda permission for API Gateway invocation
+
+**Integration Pattern:**
+```terraform
+module "api_gateway" {
+  source = "../../modules/api-gateway"
+  
+  name                 = "my-api"
+  lambda_invoke_arn    = module.lambda.invoke_arn
+  lambda_function_name = module.lambda.function_name
+  path_part            = "api"
+  http_method          = "ANY"
+  stage_name           = "dev"
+  # ... additional configuration
+}
+```
+
+### 4. Lambda Configuration Update ✅
+**Updated:** `config/dev/lambdas.yaml`
+
+**Changes:**
+- Removed Lambda Function URLs (no longer used)
+- Added `api_gateway` configuration block for each Lambda
+- **KEY PRINCIPLE:** Lambdas are exposed ONLY via API Gateway (no direct invocation)
+
+**API Gateway Configuration Schema:**
+```yaml
+api_gateway:
+  enabled: true              # Enable API Gateway for this Lambda
+  path: api                  # URL path segment (e.g., /api)
+  http_method: ANY           # HTTP method (GET, POST, PUT, DELETE, ANY)
+  stage_name: dev            # Deployment stage
+  enable_xray: true          # X-Ray tracing
+  throttling_burst_limit: 5000
+  throttling_rate_limit: 10000
+```
+
+**Examples:**
+- `chartiq-api-handler` → Exposed at `/api` (ANY method)
+- `chartiq-data-processor` → Exposed at `/process` (POST method)
+
+### 5. Lambda Infrastructure Integration ✅
+**Updated:** `environments/dev/lambda.tf`
+
+**Major Changes:**
+1. **Added local variable** for API Gateway enabled Lambdas:
+   ```terraform
+   api_gateway_lambdas = { for k, v in local.lambdas : k => v 
+     if lookup(lookup(v, "api_gateway", {}), "enabled", false) }
+   ```
+
+2. **Removed Lambda Function URLs** resource block (replaced with API Gateway)
+
+3. **Added API Gateway module invocation**:
+   ```terraform
+   module "api_gateway" {
+     source = "../../modules/api-gateway"
+     
+     for_each = local.api_gateway_lambdas
+     
+     # Lambda integration
+     lambda_invoke_arn    = module.lambda_functions[each.key].invoke_arn
+     lambda_function_name = module.lambda_functions[each.key].function_name
+     
+     # Configuration from lambdas.yaml
+     path_part    = lookup(each.value.api_gateway, "path", each.value.name)
+     http_method  = lookup(each.value.api_gateway, "http_method", "ANY")
+     stage_name   = lookup(each.value.api_gateway, "stage_name", var.environment)
+     # ... monitoring, logging, throttling settings
+   }
+   ```
+
+**Architecture:**
+```
+lambdas.yaml (config)
+    ↓
+lambda.tf (orchestration)
+    ↓
+    ├─→ Lambda Module (foundation/lambda/aws) - Lambda functions
+    └─→ API Gateway Module (local) - API endpoints
+```
+
+### 6. Lambda Outputs Enhancement ✅
+**Updated:** `environments/dev/lambda-outputs.tf`
+
+**Changes:**
+- Removed `lambda_function_urls` output (no longer applicable)
+- Added three new API Gateway outputs:
+  - `api_gateway_ids` - API Gateway REST API IDs
+  - `api_gateway_invoke_urls` - **Complete invoke URLs for accessing Lambda functions**
+  - `api_gateway_execution_arns` - Execution ARNs for permissions
+
+**Usage Example:**
+```bash
+terraform output api_gateway_invoke_urls
+# Output:
+# {
+#   "chartiq-api-handler" = "https://abc123.execute-api.us-east-1.amazonaws.com/dev/api"
+#   "chartiq-data-processor" = "https://abc123.execute-api.us-east-1.amazonaws.com/dev/process"
+# }
+```
+
+## Architecture Overview
+
+### Before (Function URLs)
+```
+User → Lambda Function URL → Lambda Function
+```
+**Issues:**
+- Direct Lambda invocation
+- Limited control over routing
+- No centralized API management
+
+### After (API Gateway)
+```
+User → API Gateway → Lambda Function
+```
+**Benefits:**
+- Centralized API management
+- Advanced throttling and rate limiting
+- Request/response transformation
+- Authentication/authorization support
+- CloudWatch integration
+- X-Ray tracing
+- Better monitoring and logging
+
+## Deployment Workflow
+
+### Lambda Deployment Trigger Paths
+The Lambda workflow triggers on changes to:
+- `config/**/lambdas.yaml` - Lambda configuration changes
+- `environments/**/lambda*.tf` - Lambda infrastructure changes
+- `modules/lambda-function/**` - Lambda module changes
+- `modules/api-gateway/**` - **NEW** API Gateway module changes
+- `.github/workflows/lambda-deployments.yaml` - Workflow changes
+
+### Separate Workflows
+- **CloudFront Deployments:** `cloudfront-deployments.yaml`
+  - Triggers on: `config/**/distributions.yaml`, `environments/**/distributions.tf`
+  
+- **Lambda Deployments:** `lambda-deployments.yaml`
+  - Triggers on: `config/**/lambdas.yaml`, `environments/**/lambda*.tf`, API Gateway module
+  - **Environment:** Dev only (as requested)
+
+## Configuration Guide
+
+### Adding a New Lambda with API Gateway
+
+1. **Add Lambda configuration to `config/dev/lambdas.yaml`:**
+```yaml
+- name: my-new-function
+  description: "My new Lambda function"
+  runtime: python3.11
+  handler: index.lambda_handler
+  timeout: 30
+  memory_size: 256
+  
+  s3_bucket: chartiq-lambda-deployments-dev
+  s3_key: my-function/v1.0.0/lambda.zip
+  
+  environment_variables:
+    ENVIRONMENT: dev
+    LOG_LEVEL: INFO
+  
+  # API Gateway configuration
+  api_gateway:
+    enabled: true
+    path: my-endpoint          # Accessible at /my-endpoint
+    http_method: POST          # Only POST requests
+    stage_name: dev
+    enable_xray: true
+    throttling_burst_limit: 1000
+    throttling_rate_limit: 2000
+  
+  log_retention_days: 7
+  
+  tags:
+    AppID: ASP0002996
+    Component: my-component
+```
+
+2. **Commit and push changes**
+3. **Workflow automatically:**
+   - Creates Lambda function
+   - Creates IAM role
+   - Creates API Gateway
+   - Configures Lambda permission for API Gateway
+   - Deploys to dev environment
+
+4. **Access your Lambda:**
+   - Get URL: `terraform output api_gateway_invoke_urls`
+   - Invoke: `POST https://<api-id>.execute-api.us-east-1.amazonaws.com/dev/my-endpoint`
+
+## Key Design Decisions
+
+### 1. Lambda Exposure Strategy
+**Decision:** Expose Lambdas ONLY via API Gateway (no direct invocation or Function URLs)
+
+**Reasoning:**
+- Centralized API management
+- Better security controls
+- Consistent monitoring and logging
+- Production-ready pattern
+
+### 2. Module Architecture
+**Decision:** Create local `api-gateway` module instead of using foundation module
+
+**Reasoning:**
+- Simpler integration with Lambda
+- Direct control over API Gateway configuration
+- No OpenAPI spec requirement (uses direct Terraform resources)
+- Easier to customize for project needs
+
+### 3. Configuration-Driven Infrastructure
+**Decision:** Continue YAML-driven pattern for Lambda + API Gateway
+
+**Reasoning:**
+- Consistency with CloudFront pattern
+- Easy to add/modify Lambdas without Terraform code changes
+- Clear separation of configuration from infrastructure code
+- Self-documenting
+
+### 4. Workflow Isolation
+**Decision:** Separate workflows for CloudFront and Lambda
+
+**Reasoning:**
+- Independent deployment cycles
+- Prevent cross-stack interference
+- Clearer deployment history
+- Faster CI/CD (only relevant tests run)
+
+## Testing Checklist
+
+Before deploying to dev:
+
+- [ ] Verify IAM role has necessary permissions
+- [ ] Ensure S3 buckets exist for Lambda code deployment
+- [ ] Review CloudWatch log retention policies
+- [ ] Test throttling limits are appropriate
+- [ ] Validate Lambda timeout settings
+- [ ] Confirm API Gateway paths don't conflict
+- [ ] Review X-Ray tracing configuration
+- [ ] Check environment variables are correct
+
+## Migration Notes
+
+**Breaking Changes:**
+- Lambda Function URLs removed (replaced with API Gateway invoke URLs)
+- Output `lambda_function_urls` removed
+- New outputs: `api_gateway_ids`, `api_gateway_invoke_urls`, `api_gateway_execution_arns`
+
+**Action Required:**
+- Update any scripts/applications using Lambda Function URLs to use API Gateway invoke URLs
+- Update monitoring dashboards to reference new API Gateway metrics
+- Review and adjust throttling limits based on expected traffic
+
+## Files Modified/Created
+
+### Created Files:
+1. `modules/api-gateway/main.tf`
+2. `modules/api-gateway/variables.tf`
+3. `modules/api-gateway/outputs.tf`
+
+### Modified Files:
+1. `config/dev/lambdas.yaml` - Added API Gateway configuration
+2. `environments/dev/lambda.tf` - Integrated API Gateway module
+3. `environments/dev/lambda-outputs.tf` - Added API Gateway outputs
+4. `environments/dev/outputs.tf` → `environments/dev/distribution-outputs.tf` (renamed)
+5. `environments/staging/outputs.tf` → `environments/staging/distribution-outputs.tf` (renamed)
+6. `environments/prod/outputs.tf` → `environments/prod/distribution-outputs.tf` (renamed)
+
+### Unchanged Files:
+- `.github/workflows/lambda-deployments.yaml` - IAM role already correct
+- `modules/lambda-function/*` - Not modified (kept original structure)
+
+## Next Steps
+
+1. **Review this implementation** with Sonyl and the team
+2. **Test locally:**
+   ```bash
+   cd environments/dev
+   terraform init
+   terraform plan
+   ```
+3. **Deploy to dev:**
+   - Create PR with these changes
+   - Workflow will run validation
+   - Use workflow_dispatch to plan/apply
+4. **Monitor API Gateway metrics** in CloudWatch
+5. **Update documentation** for accessing Lambda functions via API Gateway
+6. **Consider adding:**
+   - API Gateway custom domain names
+   - WAF integration for API protection
+   - API keys for client authentication
+   - Usage plans and quotas
+
+## Questions/Clarifications
+
+If you need to adjust:
+- **Throttling limits:** Update in `lambdas.yaml` under `api_gateway` section
+- **HTTP methods:** Change `http_method` in Lambda configuration
+- **API paths:** Modify `path` in Lambda configuration
+- **Monitoring:** Adjust `enable_xray`, `log_level`, `enable_data_trace` in `lambdas.yaml`
+
+All changes are configuration-driven - no Terraform code changes needed for most adjustments!
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\Makefile =====
+
+TOPTARGETS := pr env validate fmt lint sec init plan apply destroy docs
+SUBDIRS := $(wildcard environments/*/.)
+
+$(TOPTARGETS): $(SUBDIRS)
+$(SUBDIRS):
+	@$(MAKE) -C $@ $(MAKECMDGOALS)
+
+.PHONY: $(TOPTARGETS) $(SUBDIRS)
+
+# Root-level convenience targets
+.PHONY: fmt-all
+fmt-all:
+	@echo "Formatting all Terraform files..."
+	@terraform fmt -recursive .
+
+.PHONY: validate-all
+validate-all:
+	@echo "Validating all environments..."
+	@for dir in environments/*/; do \
+		echo "Validating $$dir..."; \
+		(cd $$dir && terraform init -backend=false && terraform validate) || exit 1; \
+	done
+
+.PHONY: clean
+clean:
+	@echo "Cleaning Terraform artifacts..."
+	@find . -type d -name ".terraform" -exec rm -rf {} + 2>/dev/null || true
+	@find . -type f -name "*.tfplan" -delete
+	@find . -type f -name ".terraform.lock.hcl" -delete
+	@find . -type d -name ".artifacts" -exec rm -rf {} + 2>/dev/null || true
+
+.PHONY: help
+help:
+	@echo "ChartIQ AWS Infrastructure - Makefile Commands"
+	@echo ""
+	@echo "Root-level targets:"
+	@echo "  make pr           - Run all pre-commit checks (fmt, validate, lint, sec)"
+	@echo "  make fmt-all      - Format all Terraform files recursively"
+	@echo "  make validate-all - Validate all environment configurations"
+	@echo "  make clean        - Remove Terraform artifacts and cache"
+	@echo "  make help         - Show this help message"
+	@echo ""
+	@echo "Environment-specific targets (run in environments/dev|staging|prod/):"
+	@echo "  make env          - Show environment configuration"
+	@echo "  make init         - Initialize Terraform"
+	@echo "  make plan         - Create Terraform execution plan"
+	@echo "  make apply        - Apply Terraform changes"
+	@echo "  make destroy      - Destroy Terraform-managed infrastructure"
+	@echo "  make fmt          - Format Terraform files"
+	@echo "  make validate     - Validate Terraform configuration"
+	@echo "  make lint         - Run tflint"
+	@echo "  make sec          - Run security scanning (tfsec)"
+	@echo "  make docs         - Generate module documentation"
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\README.md =====
+
+# ChartIQ AWS Infrastructure
+
+Infrastructure-as-code for deploying CloudFront distributions with S3 origins using a single-state architecture.
+
+## Overview
+
+Manages complete CloudFront distributions with all required resources:
+- CloudFront Distributions (OAC-secured)
+- S3 Buckets (versioned, encrypted)
+- Lambda@Edge Functions (headers, auth, SPA)
+- Route53 DNS Records
+- Project Logging Buckets
+
+**Single-State Architecture:** All resources managed together per environment - no circular dependencies, simplified deployment.
+
+## Quick Start
+
+### 1. Configure Distribution
+
+Edit `config/{environment}/distributions.yaml`:
+
+```yaml
+aws_account_id: "123456789012"
+route53_zone_id: "Z1234567890ABC"
+
+distributions:
+  - name: my-app
+    enabled: true
+    domain: my-app.example.com
+    s3_bucket: my-app-bucket
+    certificate_arn: arn:aws:acm:us-east-1:123456789012:certificate/xxx
+    
+    cloudfront:
+      enable_spa_handling: true
+      price_class: PriceClass_100
+    
+    tags:
+      AppID: ASP0002996
+      Owner: team@example.com
+```
+
+### 2. Deploy
+
+**Via GitHub (Recommended):**
+```bash
+# In PR comment:
+.deploy dev          # Deploy to dev
+.deploy staging      # Deploy to staging
+.deploy prod         # Deploy to prod
+```
+
+**Manual:**
+```bash
+cd environments/dev
+terraform init
+terraform plan
+terraform apply
+```
+
+## Repository Structure
+
+```
+chartiq-app-aws-infra/
+├── config/                    # YAML configuration files
+│   ├── dev/
+│   ├── staging/
+│   └── prod/
+├── environments/              # Terraform code (single state per env)
+│   ├── dev/
+│   ├── staging/
+│   └── prod/
+├── modules/
+│   └── cloudfront-distribution/
+└── docs/                      # Detailed documentation
+    ├── ARCHITECTURE.md
+    ├── CONFIGURATION.md
+    └── DEPLOYMENT.md
+```
+
+## Deployment Methods
+
+| Environment | Method | Approval Required |
+|-------------|--------|-------------------|
+| dev | Auto-deploy on merge or `.deploy dev` | No |
+| staging | `.deploy staging` in PR | 1 approval |
+| prod | `.deploy prod` in PR | 2 approvals |
+
+## Key Features
+
+- **Single Terraform State:** All resources managed together
+- **No Circular Dependencies:** Uses data sources for lazy evaluation
+- **Blueprint Modules:** S3 bucket and project-logging modules from terraform__foundation
+- **Branch Deploy:** Safe deployments from PR comments
+- **OIDC Authentication:** GitHub Actions uses role-based access
+
+## Documentation
+
+- [ARCHITECTURE.md](docs/ARCHITECTURE.md) - Technical architecture and single-state approach
+- [CONFIGURATION.md](docs/CONFIGURATION.md) - Full configuration reference
+- [DEPLOYMENT.md](docs/DEPLOYMENT.md) - Deployment procedures and troubleshooting
+
+## Security
+
+- S3 buckets: Public access blocked, encryption enabled
+- CloudFront: Origin Access Control (OAC), HTTPS enforced
+- State: Encrypted in S3 with lockfile support
+- CI/CD: OIDC authentication, no long-term credentials
+
+## Support
+
+For issues or questions, check the docs folder or open an issue in the repository.
+
+## 📝 License
+
+See [LICENSE](LICENSE) file.
+
+## 🆘 Support
+
+For issues or questions:
+- Create an issue in this repository
+- Contact the Platform Team
+
+## 🔗 Related Resources
+
+- [terraform-aws-static-web-distribution](https://github.com/spglobal-innersource/terraform-aws-static-web-distribution) - Underlying module
+- [AWS CloudFront Documentation](https://docs.aws.amazon.com/cloudfront/)
+- [Lambda@Edge Documentation](https://docs.aws.amazon.com/lambda/latest/dg/lambda-edge.html)
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\RESTRUCTURE_SUMMARY.md =====
+
+# Repository Restructuring Complete ✅
+
+## New Directory Structure
+
+### Before:
+```
+environments/
+  ├── dev/
+  │   ├── distributions.tf     # CloudFront
+  │   ├── lambda.tf            # Lambda
+  │   ├── backend.tf           # Shared state
+  │   └── ...
+  ├── staging/
+  └── prod/
+```
+**Problem:** Any change in `dev/` triggered BOTH CloudFront AND Lambda deployments!
+
+### After:
+```
+environments/
+  ├── dev/
+  │   ├── cloudfront/
+  │   │   ├── distributions.tf
+  │   │   ├── distribution-outputs.tf
+  │   │   ├── locals.tf
+  │   │   ├── backend.tf          # State: dev/cloudfront/terraform.tfstate
+  │   │   ├── variables.tf
+  │   │   └── versions.tf
+  │   └── lambda/
+  │       ├── lambda.tf
+  │       ├── lambda-outputs.tf
+  │       ├── backend.tf          # State: dev/lambda/terraform.tfstate
+  │       ├── variables.tf
+  │       └── versions.tf
+  ├── staging/
+  │   └── cloudfront/
+  │       ├── distributions.tf
+  │       ├── distribution-outputs.tf
+  │       ├── locals.tf
+  │       ├── backend.tf          # State: staging/cloudfront/terraform.tfstate
+  │       ├── variables.tf
+  │       └── versions.tf
+  └── prod/
+      └── cloudfront/
+          ├── distributions.tf
+          ├── distribution-outputs.tf
+          ├── locals.tf
+          ├── backend.tf          # State: prod/cloudfront/terraform.tfstate
+          ├── variables.tf
+          └── versions.tf
+```
+
+## Workflow Updates
+
+### CloudFront Deployments Workflow
+
+**Trigger Paths:**
+```yaml
+paths:
+  - 'config/**/distributions.yaml'
+  - 'environments/**/cloudfront/**'      # ← Only CloudFront directories
+  - 'modules/cloudfront-distribution/**'
+  - '.github/workflows/cloudfront-deployments.yaml'
+```
+
+**Working Directories:**
+- Validate Dev: `./environments/dev/cloudfront`
+- Validate Staging: `./environments/staging/cloudfront`
+- Validate Prod: `./environments/prod/cloudfront`
+- Deploy Dev: `./environments/dev/cloudfront`
+- Deploy Staging: `./environments/staging/cloudfront`
+- Deploy Prod: `./environments/prod/cloudfront`
+
+### Lambda Deployments Workflow
+
+**Trigger Paths:**
+```yaml
+paths:
+  - 'config/**/lambdas.yaml'
+  - 'environments/**/lambda/**'          # ← Only Lambda directories
+  - 'modules/lambda-function/**'
+  - 'modules/api-gateway/**'
+  - '.github/workflows/lambda-deployments.yaml'
+```
+
+**Working Directories:**
+- Validate Dev: `./environments/dev/lambda`
+- Deploy Dev: `./environments/dev/lambda`
+
+## Backend State Files
+
+### CloudFront States:
+- **Dev:** `s3://state.us-east-1.mi-platform.nonprod/projects/chartiq-app-aws-infra/dev/cloudfront/terraform.tfstate`
+- **Staging:** `s3://state.us-east-1.mi-platform.nonprod/projects/chartiq-app-aws-infra/staging/cloudfront/terraform.tfstate`
+- **Prod:** `s3://state.us-east-1.mi-platform.prod/projects/chartiq-app-aws-infra/prod/cloudfront/terraform.tfstate`
+
+### Lambda States:
+- **Dev:** `s3://state.us-east-1.mi-platform.nonprod/projects/chartiq-app-aws-infra/dev/lambda/terraform.tfstate`
+
+## Benefits
+
+### 1. **Complete Isolation** ✅
+- CloudFront changes → Only CloudFront workflow runs
+- Lambda changes → Only Lambda workflow runs
+- No cross-contamination
+
+### 2. **Independent Deployments** ✅
+```
+Change config/dev/distributions.yaml
+  ↓
+Only cloudfront-deployments workflow triggers
+  ↓
+Only CloudFront infrastructure deployed
+  ↓
+Lambda infrastructure untouched
+```
+
+```
+Change config/dev/lambdas.yaml
+  ↓
+Only lambda-deployments workflow triggers
+  ↓
+Only Lambda infrastructure deployed
+  ↓
+CloudFront infrastructure untouched
+```
+
+### 3. **Separate State Management** ✅
+- Each stack has its own state file
+- No state conflicts
+- Can destroy one without affecting the other
+- Clearer blast radius
+
+### 4. **Faster CI/CD** ✅
+- Workflows only run when relevant files change
+- No unnecessary validations
+- Parallel execution possible
+
+## Testing
+
+### Test CloudFront Deployment:
+```bash
+cd environments/dev/cloudfront
+terraform init
+terraform plan
+```
+
+### Test Lambda Deployment:
+```bash
+cd environments/dev/lambda
+terraform init
+terraform plan
+```
+
+## Migration Notes
+
+⚠️ **IMPORTANT:** Existing Terraform state needs to be migrated!
+
+Since we've moved files and changed backend paths, you need to either:
+
+### Option 1: Fresh Start (If no infrastructure exists)
+```bash
+# CloudFront
+cd environments/dev/cloudfront
+terraform init
+terraform plan
+terraform apply
+
+# Lambda
+cd environments/dev/lambda
+terraform init
+terraform plan
+terraform apply
+```
+
+### Option 2: State Migration (If infrastructure already exists)
+
+You'll need to:
+1. Import existing resources into new state files
+2. Or use `terraform state mv` to reorganize state
+3. Or keep old state and reference it
+
+**Recommendation:** Since Lambda is new (dev only), start fresh. For CloudFront, if infrastructure exists, you may need to import.
+
+## Rollback Plan
+
+If issues arise, you can revert by:
+1. Moving files back to parent directories
+2. Reverting workflow changes
+3. Restoring old backend configurations
+
+## Next Steps
+
+1. ✅ Structure reorganized
+2. ✅ Workflows updated
+3. ✅ Backend configurations updated
+4. ⏳ Test CloudFront deployment
+5. ⏳ Test Lambda deployment
+6. ⏳ Verify state isolation
+7. ⏳ Update team documentation
+
+## Questions?
+
+- **Q: Why separate directories?**
+  - A: Prevents accidental deployments of unrelated infrastructure
+
+- **Q: Can I still deploy both together?**
+  - A: Yes, but you'd need to trigger both workflows manually or make changes to both directories
+
+- **Q: What about shared variables?**
+  - A: Each directory has its own copy. You can use Terraform data sources to reference across stacks if needed.
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\.github\dependabot.yaml =====
+
+version: 2
+
+registries:
+  artifactory:
+    type: terraform-registry
+    url: https://repo.ihsmarkit.com/artifactory/api/terraform/terraform
+    token: ${{ secrets.TERRAFORM_REGISTRY_TOKEN }}
+
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: daily
+    reviewers:
+      - "spglobal-innersource/terraform-aws-maintainers"
+    labels:
+      - "dependencies"
+      - "github-actions"
+
+  - package-ecosystem: terraform
+    registries:
+      - artifactory
+    directory: /
+    schedule:
+      interval: daily
+    reviewers:
+      - "spglobal-innersource/terraform-aws-maintainers"
+    labels:
+      - "dependencies"
+      - "terraform"
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\.github\workflows\bootstrap.yaml =====
+
+name: bootstrap
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'bootstrap/**'
+  pull_request_target:
+    branches:
+      - main
+    paths:
+      - 'bootstrap/**'
+
+permissions:
+  id-token: write
+  contents: read
+  issues: write
+  pull-requests: write
+  security-events: write
+  pages: read
+  checks: write
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  validate-dev:
+    if: contains('[ "pull_request", "pull_request_target" ]', github.event_name)
+    runs-on: spglobal-innersource-shared-runner
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: arn:aws:iam::745747212857:role/chartiq-github-actions-dev-role
+          aws-region: us-east-1
+
+      - name: terraform validate
+        uses: spglobal-innersource/terraform-actions/terraform-validate@v2
+        with:
+          registry-token: ${{ secrets.TERRAFORM_REGISTRY_TOKEN }}
+          working-directory: ./bootstrap/dev
+
+      - name: terraform plan
+        uses: spglobal-innersource/terraform-actions/terraform-plan@v2
+        with:
+          terraform-token: ${{ secrets.TERRAFORM_REGISTRY_TOKEN }}
+          working-directory: ./bootstrap/dev
+          enable-comments: true
+
+  validate-prod:
+    if: contains('[ "pull_request", "pull_request_target" ]', github.event_name)
+    runs-on: spglobal-innersource-shared-runner
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: arn:aws:iam::541729437036:role/chartiq-github-actions-prod-role
+          aws-region: us-east-1
+
+      - name: terraform validate
+        uses: spglobal-innersource/terraform-actions/terraform-validate@v2
+        with:
+          registry-token: ${{ secrets.TERRAFORM_REGISTRY_TOKEN }}
+          working-directory: ./bootstrap/prod
+
+      - name: terraform plan
+        uses: spglobal-innersource/terraform-actions/terraform-plan@v2
+        with:
+          terraform-token: ${{ secrets.TERRAFORM_REGISTRY_TOKEN }}
+          working-directory: ./bootstrap/prod
+          enable-comments: true
+
+  deploy-dev:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: []
+    runs-on: spglobal-innersource-shared-runner
+    environment:
+      name: dev
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: arn:aws:iam::745747212857:role/chartiq-github-actions-dev-role
+          aws-region: us-east-1
+
+      - name: terraform validate
+        uses: spglobal-innersource/terraform-actions/terraform-validate@v2
+        with:
+          registry-token: ${{ secrets.TERRAFORM_REGISTRY_TOKEN }}
+          working-directory: ./bootstrap/dev
+
+      - name: terraform plan
+        uses: spglobal-innersource/terraform-actions/terraform-plan@v2
+        with:
+          terraform-token: ${{ secrets.TERRAFORM_REGISTRY_TOKEN }}
+          working-directory: ./bootstrap/dev
+          enable-comments: false
+
+      - name: terraform apply
+        uses: spglobal-innersource/terraform-actions/terraform-apply@v2
+        with:
+          working-directory: ./bootstrap/dev
+          artifact-prefix: bootstrap-dev
+
+  deploy-prod:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: []
+    runs-on: spglobal-innersource-shared-runner
+    environment:
+      name: prod
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: arn:aws:iam::541729437036:role/chartiq-github-actions-prod-role
+          aws-region: us-east-1
+
+      - name: terraform validate
+        uses: spglobal-innersource/terraform-actions/terraform-validate@v2
+        with:
+          registry-token: ${{ secrets.TERRAFORM_REGISTRY_TOKEN }}
+          working-directory: ./bootstrap/prod
+
+      - name: terraform plan
+        uses: spglobal-innersource/terraform-actions/terraform-plan@v2
+        with:
+          terraform-token: ${{ secrets.TERRAFORM_REGISTRY_TOKEN }}
+          working-directory: ./bootstrap/prod
+          enable-comments: false
+
+      - name: terraform apply
+        uses: spglobal-innersource/terraform-actions/terraform-apply@v2
+        with:
+          working-directory: ./bootstrap/prod
+          artifact-prefix: bootstrap-prod
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\.github\workflows\cloudfront-deployments-dev.yaml =====
+
+name: cloudfront-deployments-dev
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'config/dev/distributions.yaml'
+      - 'environments/dev/cloudfront/**'
+      - 'modules/cloudfront-distribution/**'
+  pull_request_target:
+    branches:
+      - main
+    paths:
+      - 'config/dev/distributions.yaml'
+      - 'environments/dev/cloudfront/**'
+      - 'modules/cloudfront-distribution/**'
+
+permissions:
+  id-token: write
+  contents: read
+  issues: write
+  pull-requests: write
+  security-events: write
+  pages: read
+  checks: write
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    if: contains('[ "pull_request", "pull_request_target" ]', github.event_name)
+    runs-on: spglobal-innersource-shared-runner
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.ref }}
+
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: arn:aws:iam::745747212857:role/chartiq-github-actions-dev-role
+          aws-region: us-east-1
+
+      - name: terraform validate
+        uses: spglobal-innersource/terraform-actions/terraform-validate@v2
+        with:
+          registry-token: ${{ secrets.TERRAFORM_REGISTRY_TOKEN }}
+          working-directory: ./environments/dev/cloudfront
+
+      - name: terraform plan
+        uses: spglobal-innersource/terraform-actions/terraform-plan@v2
+        with:
+          terraform-token: ${{ secrets.TERRAFORM_REGISTRY_TOKEN }}
+          working-directory: ./environments/dev/cloudfront
+          enable-comments: true
+
+  deploy:
+    if: "!contains('[ \"pull_request\", \"pull_request_target\" ]', github.event_name)"
+    runs-on: spglobal-innersource-shared-runner
+    environment:
+      name: dev
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: arn:aws:iam::745747212857:role/chartiq-github-actions-dev-role
+          aws-region: us-east-1
+
+      - name: terraform validate
+        uses: spglobal-innersource/terraform-actions/terraform-validate@v2
+        with:
+          registry-token: ${{ secrets.TERRAFORM_REGISTRY_TOKEN }}
+          working-directory: ./environments/dev/cloudfront
+
+      - name: terraform plan
+        uses: spglobal-innersource/terraform-actions/terraform-plan@v2
+        with:
+          terraform-token: ${{ secrets.TERRAFORM_REGISTRY_TOKEN }}
+          working-directory: ./environments/dev/cloudfront
+          enable-comments: false
+
+      - name: terraform apply
+        uses: spglobal-innersource/terraform-actions/terraform-apply@v2
+        with:
+          working-directory: ./environments/dev/cloudfront
+          artifact-prefix: cloudfront-dev
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\.github\workflows\cloudfront-deployments-prod.yaml =====
+
+name: cloudfront-deployments-prod
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'config/prod/distributions.yaml'
+      - 'environments/prod/cloudfront/**'
+      - 'modules/cloudfront-distribution/**'
+  pull_request_target:
+    branches:
+      - main
+    paths:
+      - 'config/prod/distributions.yaml'
+      - 'environments/prod/cloudfront/**'
+      - 'modules/cloudfront-distribution/**'
+
+permissions:
+  id-token: write
+  contents: read
+  issues: write
+  pull-requests: write
+  security-events: write
+  pages: read
+  checks: write
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    if: contains('[ "pull_request", "pull_request_target" ]', github.event_name)
+    runs-on: spglobal-innersource-shared-runner
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.ref }}
+
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: arn:aws:iam::541729437036:role/chartiq-github-actions-prod-role
+          aws-region: us-east-1
+
+      - name: terraform validate
+        uses: spglobal-innersource/terraform-actions/terraform-validate@v2
+        with:
+          registry-token: ${{ secrets.TERRAFORM_REGISTRY_TOKEN }}
+          working-directory: ./environments/prod/cloudfront
+
+      - name: terraform plan
+        uses: spglobal-innersource/terraform-actions/terraform-plan@v2
+        with:
+          terraform-token: ${{ secrets.TERRAFORM_REGISTRY_TOKEN }}
+          working-directory: ./environments/prod/cloudfront
+          enable-comments: true
+
+  deploy:
+    if: "!contains('[ \"pull_request\", \"pull_request_target\" ]', github.event_name)"
+    runs-on: spglobal-innersource-shared-runner
+    environment:
+      name: prod
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: arn:aws:iam::541729437036:role/chartiq-github-actions-prod-role
+          aws-region: us-east-1
+
+      - name: terraform validate
+        uses: spglobal-innersource/terraform-actions/terraform-validate@v2
+        with:
+          registry-token: ${{ secrets.TERRAFORM_REGISTRY_TOKEN }}
+          working-directory: ./environments/prod/cloudfront
+
+      - name: terraform plan
+        uses: spglobal-innersource/terraform-actions/terraform-plan@v2
+        with:
+          terraform-token: ${{ secrets.TERRAFORM_REGISTRY_TOKEN }}
+          working-directory: ./environments/prod/cloudfront
+          enable-comments: false
+
+      - name: terraform apply
+        uses: spglobal-innersource/terraform-actions/terraform-apply@v2
+        with:
+          working-directory: ./environments/prod/cloudfront
+          artifact-prefix: cloudfront-prod
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\.github\workflows\lambda-deployments-dev.yaml =====
+
+name: lambda-deployments-dev
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'config/dev/lambdas.yaml'
+      - 'environments/dev/lambda/**'
+      - 'modules/lambda-function/**'
+      - 'modules/api-gateway/**'
+  pull_request_target:
+    branches:
+      - main
+    paths:
+      - 'config/dev/lambdas.yaml'
+      - 'environments/dev/lambda/**'
+      - 'modules/lambda-function/**'
+      - 'modules/api-gateway/**'
+
+permissions:
+  id-token: write
+  contents: read
+  issues: write
+  pull-requests: write
+  security-events: write
+  pages: read
+  checks: write
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    if: contains('[ "pull_request", "pull_request_target" ]', github.event_name)
+    runs-on: spglobal-innersource-shared-runner
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.ref }}
+
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: arn:aws:iam::745747212857:role/chartiq-github-actions-dev-role
+          aws-region: us-east-1
+
+      - name: terraform validate
+        uses: spglobal-innersource/terraform-actions/terraform-validate@v2
+        with:
+          terraform-token: ${{ secrets.TERRAFORM_REGISTRY_TOKEN }}
+          working-directory: ./environments/dev/lambda
+
+      - name: terraform plan
+        uses: spglobal-innersource/terraform-actions/terraform-plan@v2
+        with:
+          terraform-token: ${{ secrets.TERRAFORM_REGISTRY_TOKEN }}
+          working-directory: ./environments/dev/lambda
+          enable-comments: true
+
+  deploy:
+    if: "!contains('[ \"pull_request\", \"pull_request_target\" ]', github.event_name)"
+    runs-on: spglobal-innersource-shared-runner
+    environment:
+      name: dev
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: arn:aws:iam::745747212857:role/chartiq-github-actions-dev-role
+          aws-region: us-east-1
+
+      - name: terraform validate
+        uses: spglobal-innersource/terraform-actions/terraform-validate@v2
+        with:
+          registry-token: ${{ secrets.TERRAFORM_REGISTRY_TOKEN }}
+          working-directory: ./environments/dev/lambda
+
+      - name: terraform plan
+        uses: spglobal-innersource/terraform-actions/terraform-plan@v2
+        with:
+          terraform-token: ${{ secrets.TERRAFORM_REGISTRY_TOKEN }}
+          working-directory: ./environments/dev/lambda
+          enable-comments: false
+
+      - name: terraform apply
+        uses: spglobal-innersource/terraform-actions/terraform-apply@v2
+        with:
+          working-directory: ./environments/dev/lambda
+          artifact-prefix: lambda-dev
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\.github\workflows\lambda-deployments-prod.yaml =====
+
+name: lambda-deployments-prod
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'config/prod/lambdas.yaml'
+      - 'environments/prod/lambda/**'
+      - 'modules/lambda-function/**'
+      - 'modules/api-gateway/**'
+  pull_request_target:
+    branches:
+      - main
+    paths:
+      - 'config/prod/lambdas.yaml'
+      - 'environments/prod/lambda/**'
+      - 'modules/lambda-function/**'
+      - 'modules/api-gateway/**'
+
+permissions:
+  id-token: write
+  contents: read
+  issues: write
+  pull-requests: write
+  security-events: write
+  pages: read
+  checks: write
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    if: contains('[ "pull_request", "pull_request_target" ]', github.event_name)
+    runs-on: spglobal-innersource-shared-runner
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.ref }}
+
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: arn:aws:iam::541729437036:role/chartiq-github-actions-prod-role
+          aws-region: us-east-1
+
+      - name: terraform validate
+        uses: spglobal-innersource/terraform-actions/terraform-validate@v2
+        with:
+          registry-token: ${{ secrets.TERRAFORM_REGISTRY_TOKEN }}
+          working-directory: ./environments/prod/lambda
+
+      - name: terraform plan
+        uses: spglobal-innersource/terraform-actions/terraform-plan@v2
+        with:
+          terraform-token: ${{ secrets.TERRAFORM_REGISTRY_TOKEN }}
+          working-directory: ./environments/prod/lambda
+          enable-comments: true
+
+  deploy:
+    if: "!contains('[ \"pull_request\", \"pull_request_target\" ]', github.event_name)"
+    runs-on: spglobal-innersource-shared-runner
+    environment:
+      name: prod
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: arn:aws:iam::541729437036:role/chartiq-github-actions-prod-role
+          aws-region: us-east-1
+
+      - name: terraform validate
+        uses: spglobal-innersource/terraform-actions/terraform-validate@v2
+        with:
+          registry-token: ${{ secrets.TERRAFORM_REGISTRY_TOKEN }}
+          working-directory: ./environments/prod/lambda
+
+      - name: terraform plan
+        uses: spglobal-innersource/terraform-actions/terraform-plan@v2
+        with:
+          terraform-token: ${{ secrets.TERRAFORM_REGISTRY_TOKEN }}
+          working-directory: ./environments/prod/lambda
+          enable-comments: false
+
+      - name: terraform apply
+        uses: spglobal-innersource/terraform-actions/terraform-apply@v2
+        with:
+          working-directory: ./environments/prod/lambda
+          artifact-prefix: lambda-prod
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\.github\workflows\stale.yaml =====
+
+name: stale
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Daily at midnight UTC
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  stale:
+    runs-on: spglobal-innersource-shared-runner
+    steps:
+      - uses: actions/stale@v10
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          
+          # Issues
+          stale-issue-message: |
+            This issue has been automatically marked as stale because it has not had recent activity. 
+            It will be closed if no further activity occurs within the next 7 days.
+            
+            If this issue is still relevant, please add a comment to keep it open.
+          close-issue-message: |
+            This issue was automatically closed due to inactivity.
+            
+            If you believe this issue should be reopened, please create a new issue with updated context.
+          days-before-issue-stale: 60
+          days-before-issue-close: 7
+          stale-issue-label: stale
+          exempt-issue-labels: bug,enhancement,documentation,help-wanted
+          
+          # Pull Requests
+          stale-pr-message: |
+            This pull request has been automatically marked as stale because it has not had recent activity.
+            It will be closed if no further activity occurs within the next 7 days.
+            
+            If this PR is still relevant, please add a comment or push new commits to keep it open.
+          close-pr-message: |
+            This pull request was automatically closed due to inactivity.
+            
+            If you would like to continue this work, please reopen the PR or create a new one.
+          days-before-pr-stale: 30
+          days-before-pr-close: 7
+          stale-pr-label: stale
+          exempt-pr-labels: work-in-progress,blocked,do-not-close
+          
+          # General settings
+          operations-per-run: 100
+          remove-stale-when-updated: true
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\bootstrap\dev\backend.tf =====
+
+terraform {
+  required_version = ">= 1.5.0"
+
+  backend "s3" {
+    bucket       = "state.us-east-1.mi-platform.nonprod"
+    key          = "projects/chartiq-app-aws-infra/bootstrap-dev/terraform.tfstate"
+    region       = "us-east-1"
+    encrypt      = true
+    kms_key_id   = "arn:aws:kms:us-east-1:745747212857:key/f75bfdb2-ad2b-4cb7-8cfd-e83e71e08519"
+    use_lockfile = true
+  }
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\bootstrap\dev\main.tf =====
+
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 6.0.0, < 7.0.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = var.aws_region
+}
+
+# Create S3 bucket for Lambda deployments using internal module
+module "lambda_bucket" {
+  source  = "repo.ihsmarkit.com/terraform__foundation/bucket/aws"
+  version = ">= 7.0"
+
+  name          = "chartiq-lambda-dev"
+  force_destroy = false
+  kms_key_id    = null
+  log_bucket    = "logs.us-east-1.mi-platform.nonprod"
+  log_prefix    = "lambda/"
+
+  tags = {
+    Environment = "dev"
+    Project     = "chartiq"
+    ManagedBy   = "terraform"
+    Repository  = "spglobal-innersource/chartiq-app-aws-infra"
+    AppID       = "ASP0002996"
+    Owner       = "chartiq-operations-support@spglobal.com"
+    BU          = "MI"
+  }
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\bootstrap\dev\outputs.tf =====
+
+output "bucket_name" {
+  description = "Name of the created S3 bucket."
+  value       = "chartiq-lambda-dev"
+}
+
+output "bucket_arn" {
+  description = "ARN of the created S3 bucket."
+  value       = module.lambda_bucket.arn
+}
+
+output "bucket_id" {
+  description = "ID of the created S3 bucket."
+  value       = module.lambda_bucket.id
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\bootstrap\dev\variables.tf =====
+
+variable "aws_region" {
+  type        = string
+  default     = "us-east-1"
+  description = "The AWS region to deploy resources."
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\bootstrap\prod\backend.tf =====
+
+terraform {
+  required_version = ">= 1.5.0"
+
+  backend "s3" {
+    bucket       = "state.us-east-1.mi-platform.prod"
+    key          = "projects/chartiq-app-aws-infra/bootstrap-prod/terraform.tfstate"
+    region       = "us-east-1"
+    encrypt      = true
+    kms_key_id   = "arn:aws:kms:us-east-1:541729437036:alias/mi-platform-state"
+    use_lockfile = true
+  }
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\bootstrap\prod\main.tf =====
+
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 6.0.0, < 7.0.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = var.aws_region
+}
+
+# Create S3 bucket for Lambda deployments using internal module
+module "lambda_bucket" {
+  source  = "repo.ihsmarkit.com/terraform__foundation/bucket/aws"
+  version = ">= 7.0"
+
+  name          = "chartiq-lambda-prod"
+  force_destroy = false
+  kms_key_id    = null
+  log_bucket    = "logs.us-east-1.mi-platform.prod"
+  log_prefix    = "lambda/"
+
+  tags = {
+    Environment = "prod"
+    Project     = "chartiq"
+    ManagedBy   = "terraform"
+    Repository  = "spglobal-innersource/chartiq-app-aws-infra"
+    AppID       = "ASP0002996"
+    Owner       = "chartiq-operations-support@spglobal.com"
+    BU          = "MI"
+  }
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\bootstrap\prod\outputs.tf =====
+
+output "bucket_name" {
+  description = "Name of the created S3 bucket."
+  value       = "chartiq-lambda-prod"
+}
+
+output "bucket_arn" {
+  description = "ARN of the created S3 bucket."
+  value       = module.lambda_bucket.arn
+}
+
+output "bucket_id" {
+  description = "ID of the created S3 bucket."
+  value       = module.lambda_bucket.id
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\bootstrap\prod\variables.tf =====
+
+variable "aws_region" {
+  type        = string
+  default     = "us-east-1"
+  description = "The AWS region to deploy resources."
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\config\dev\distributions.yaml =====
+
+# =============================================================================
+# ChartIQ AWS Infrastructure - Development Environment
+# =============================================================================
+# This file defines all CloudFront distributions for the dev environment.
+# Users only need to edit this file to manage their distributions.
+#
+# For full configuration options, see: ../../docs/CONFIGURATION.md
+# =============================================================================
+
+# AWS Account Configuration
+# -------------------------
+# REQUIRED: Specify the AWS Account ID where resources will be created
+# This must match the account where dart-finops-automation-role exists
+aws_account_id: "745747212857"  # MI Platform Non-Prod (same as Route53)
+
+# Route53 Configuration
+# ---------------------
+# REQUIRED: Specify the Route53 Hosted Zone ID for your domain
+# This is used for:
+#   1. ACM certificate validation (automatic DNS validation)
+#   2. Creating DNS records for CloudFront distributions
+#
+# To find your zone ID:
+#   aws route53 list-hosted-zones --query "HostedZones[?Name=='chartiq.com.'].Id" --output text
+route53_zone_id: "Z03288031RR00JWZLJC59"
+
+# Distributions Configuration
+# ---------------------------
+distributions:
+  # Example 1: CloudFront Distribution
+  # -----------------------------------
+  # S3 bucket is managed separately in infrastructure/s3-buckets/
+  
+  - name: test-cloudfront
+    enabled: true
+    domain: demo-dev.chartiq.com
+    s3_bucket: sahil-abc-demo-dev-chartiq-com
+    certificate_arn: arn:aws:acm:us-east-1:745747212857:certificate/4dd28603-5fd1-47be-a2d7-ead8698e451d
+    
+    dns:
+      aliases:
+        - sahil-abc
+    
+    cloudfront:
+      enable_spa_handling: true
+      price_class: PriceClass_100
+      viewer_protocol_policy: redirect-to-https
+      cache:
+        min_ttl: 0
+        default_ttl: 0
+        max_ttl: 0
+    
+    tags:
+      Application: ChartIQ
+      Team: ChartIQ
+      OwnerID: chartiq-operations-support@spglobal.com
+      Environment: development
+
+# ci-demo-dev-cloudfront 
+  - name: ci-demo-dev-cloudfront
+    enabled: true
+    domain: demo-dev.chartiq.com
+    s3_bucket: ci-demo-dev-chartiq-com
+    certificate_arn: arn:aws:acm:us-east-1:745747212857:certificate/4dd28603-5fd1-47be-a2d7-ead8698e451d
+    
+    dns:
+      aliases:
+        - ci
+    
+    cloudfront:
+      enable_spa_handling: true
+      price_class: PriceClass_100
+      viewer_protocol_policy: redirect-to-https
+      cache:
+        min_ttl: 0
+        default_ttl: 0
+        max_ttl: 0
+    
+    tags:
+      ApplicationName: ChartIQ
+      Team: ChartIQ
+      OwnerID: chartiq-operations-support@spglobal.com
+      Environment: DEV
+ 
+  # Example 2: Use Pre-Existing S3 Bucket
+  # -------------------------------------
+  # This uses an existing S3 bucket (not managed by Terraform)
+  # Useful when bucket is created by another process or already exists
+  
+  # - name: existing-app
+  #   enabled: false
+  #   domain: existing-app.demo-dev.chartiq.com
+  #   s3_bucket: my-existing-bucket-name  # Name of existing bucket
+  #   certificate_arn: arn:aws:acm:us-east-1:745747212857:certificate/REPLACE_WITH_YOUR_CERT_ID
+  #   
+  #   # S3 Configuration - use existing bucket
+  #   s3:
+  #     bucket_exists: true  # Skip bucket creation, use existing
+  #   
+  #   # IMPORTANT: Ensure the existing bucket has:
+  #   # 1. Proper bucket policy allowing CloudFront OAC access
+  #   # 2. Versioning enabled (if desired)
+  #   # 3. Encryption configured
+  #   # 4. Public access blocked
+  #   
+  #   tags:
+  #     Application: ExistingApp
+  #     Team: ChartIQ
+
+
+  # Example 3: With Authentication (Disabled by default)
+  # ---------------------------------------------------
+  # Uncomment and configure if you need OIDC authentication
+  
+  # - name: secure-app
+  #   enabled: false
+  #   domain: secure-app.demo-dev.chartiq.com
+  #   s3_bucket: secure-app-demo-dev-chartiq
+  #   certificate_arn: arn:aws:acm:us-east-1:745747212857:certificate/REPLACE_WITH_YOUR_CERT_ID
+  #   
+  #   authentication:
+  #     enabled: true
+  #     oidc_client_id: your-client-id-from-sam
+  #     oidc_issuer: https://sam.ihsmarkit.com:443/sso/oauth2
+  #     oidc_scopes:
+  #       - openid
+  #       - email
+  #       - profile
+  #     auth_dns_name: auth.secure-app.demo-dev.chartiq.com
+  #   
+  #   tags:
+  #     Application: SecureApp
+  #     Team: ChartIQ
+
+
+  # Example 4: Advanced Configuration with Failover
+  # ----------------------------------------------
+  # Full-featured configuration with secondary bucket failover
+  
+  # - name: advanced-app
+  #   enabled: false
+  #   domain: advanced-app.demo-dev.chartiq.com
+  #   s3_bucket: advanced-app-primary
+  #   certificate_arn: arn:aws:acm:us-east-1:745747212857:certificate/REPLACE_WITH_YOUR_CERT_ID
+  #   
+  #   # DNS Configuration
+  #   dns:
+  #     zone_id: Z1234567890ABC  # Optional: will be auto-detected if not provided
+  #     aliases:
+  #       - "."      # Root domain
+  #       - "www"    # www subdomain
+  #   
+  #   # S3 Configuration
+  #   s3:
+  #     versioning_enabled: true
+  #     lifecycle_rules:
+  #       noncurrent_days: 30
+  #     kms_key_arn: ""  # Optional: for KMS encryption
+  #     logging_enabled: true
+  #   
+  #   # CloudFront Settings
+  #   cloudfront:
+  #     price_class: PriceClass_100
+  #     viewer_protocol_policy: redirect-to-https
+  #     root_object: index.html
+  #     error_object: /index.html
+  #     enable_spa_handling: true
+  #     
+  #     # Failover Configuration
+  #     secondary_bucket: advanced-app-backup
+  #     failover:
+  #       enabled: true
+  #       status_codes: [500, 502, 503, 504]
+  #   
+  #   # Custom Security Headers
+  #   headers:
+  #     X-Frame-Options: DENY
+  #     X-Content-Type-Options: nosniff
+  #     X-XSS-Protection: "1; mode=block"
+  #     Referrer-Policy: strict-origin-when-cross-origin
+  #     Permissions-Policy: "geolocation=(), microphone=(), camera=()"
+  #   
+  #   tags:
+  #     Application: AdvancedApp
+  #     Team: ChartIQ
+  #     Environment: dev
+  #     CostCenter: Platform
+
+# =============================================================================
+# Quick Start Guide
+# =============================================================================
+# 1. Copy one of the examples above
+# 2. Update the following required fields:
+#    - name: Unique identifier for your distribution
+#    - domain: Your fully-qualified domain name
+#    - s3_bucket: Name for your S3 bucket (will be created automatically)
+#    - certificate_arn: Your ACM certificate ARN (must be in us-east-1)
+# 
+# 3. Set enabled: true
+# 
+# 4. Deploy:
+#    cd environments/dev
+#    make plan
+#    make apply
+# 
+# That's it! All resources will be automatically created:
+# - S3 bucket with proper configuration
+# - CloudFront distribution with Lambda@Edge
+# - Route53 DNS records
+# - IAM roles and policies
+# - CloudWatch log groups
+# =============================================================================
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\config\dev\lambdas.yaml =====
+
+# Lambda Functions Configuration for Dev Environment
+# 
+# Lambda functions - with optional API Gateway integration
+
+lambdas:
+  # Simple Lambda without API Gateway
+  - name: hello-world
+    description: "Simple Hello World Lambda function"
+    runtime: python3.11
+    handler: index.lambda_handler
+    timeout: 30
+    memory_size: 256
+    
+    # Deploy from S3 bucket (same bucket as CloudFront distributions)
+    s3_bucket: sahil-abc-demo-dev-chartiq-com  # Change to match your CloudFront distribution bucket name
+    s3_key: lambda/hello-world.zip
+    
+    # Environment variables
+    environment_variables:
+      ENVIRONMENT: dev
+      LOG_LEVEL: INFO
+    
+    # API Gateway Configuration - Expose Lambda via HTTP endpoint
+    api_gateway:
+      enabled: true
+      path: hello
+      http_method: ANY
+      stage_name: dev
+      enable_xray: true
+      throttling_burst_limit: 5000
+      throttling_rate_limit: 10000
+    
+    # CloudWatch Logs retention
+    log_retention_days: 7
+    
+    tags:
+      AppID: ASP0002996
+      Owner: sahil.chopra@spglobal.com
+      Component: hello-world
+
+  # Example: Lambda WITH API Gateway (commented out - uncomment to enable)
+  # - name: api-function
+  #   description: "Lambda exposed via API Gateway"
+  #   runtime: python3.11
+  #   handler: index.lambda_handler
+  #   timeout: 30
+  #   memory_size: 256
+  #   
+  #   s3_bucket: example-dev
+  #   s3_key: lambda/api-function.zip
+  #   
+  #   environment_variables:
+  #     ENVIRONMENT: dev
+  #   
+  #   # API Gateway Configuration - Expose Lambda via HTTP endpoint
+  #   api_gateway:
+  #     enabled: true
+  #     path: api
+  #     http_method: ANY
+  #     stage_name: dev
+  #     enable_xray: true
+  #     throttling_burst_limit: 5000
+  #     throttling_rate_limit: 10000
+  #   
+  #   log_retention_days: 7
+  #   
+  #   tags:
+  #     Component: api-function
+
+  # Add more Lambda functions as needed
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\config\prod\distributions.yaml =====
+
+# =============================================================================
+# ChartIQ AWS Infrastructure - Production Environment
+# =============================================================================
+# CRITICAL: Changes to this file affect production systems
+#
+# AWS Account Configuration
+# -------------------------
+# REQUIRED: Specify the AWS Account ID where resources will be created
+# This must match the account where dart-finops-automation-role exists
+aws_account_id: "541729437036"  # MI Platform Prod
+
+# Route53 Configuration
+# ---------------------
+# REQUIRED: Specify the Route53 Hosted Zone ID for your domain
+# This is used for:
+#   1. ACM certificate validation (automatic DNS validation)
+#   2. Creating DNS records for CloudFront distributions
+#
+# To find your zone ID:
+#   aws route53 list-hosted-zones --query "HostedZones[?Name=='chartiq.com.'].Id" --output text
+route53_zone_id: "Z05190753GH80PG4LHVS1"
+
+# Distributions Configuration
+# ---------------------------
+distributions:
+  # Newsroom Production Distribution
+  # ---------------------------------
+  # S3 bucket is managed separately in infrastructure/s3-buckets/prod/
+  
+  - name: newsroom-prod
+    enabled: true
+    domain: demo.chartiq.com
+    s3_bucket: newsroom.demo-prod.chartiq.com
+    certificate_arn: arn:aws:acm:us-east-1:541729437036:certificate/04bfd035-2fbc-4c19-9bda-07b938ca336d
+    
+    dns:
+      aliases:
+        - newsroom
+    
+    cloudfront:
+      enable_spa_handling: true
+      price_class: PriceClass_All
+      viewer_protocol_policy: redirect-to-https
+      cache:
+        min_ttl: 0
+        default_ttl: 0
+        max_ttl: 0
+    
+    headers:
+      X-Frame-Options: DENY
+      X-Content-Type-Options: nosniff
+      X-XSS-Protection: "1; mode=block"
+      Referrer-Policy: strict-origin-when-cross-origin
+      Strict-Transport-Security: "max-age=31536000; includeSubDomains"
+    
+    tags:
+      Application: ChartIQ
+      Team: ChartIQ
+      Environment: prod
+      ManagedBy: terraform
+
+  # CI Demo Production Distribution
+  # ---------------------------------
+  
+  - name: ci-demo-prod
+    enabled: true
+    domain: demo.chartiq.com
+    s3_bucket: ci.demo.chartiq.com
+    certificate_arn: arn:aws:acm:us-east-1:541729437036:certificate/04bfd035-2fbc-4c19-9bda-07b938ca336d
+    
+    dns:
+      aliases:
+        - ci
+    
+    cloudfront:
+      enable_spa_handling: true
+      price_class: PriceClass_All
+      viewer_protocol_policy: redirect-to-https
+      cache:
+        min_ttl: 0
+        default_ttl: 0
+        max_ttl: 0
+    
+    headers:
+      X-Frame-Options: DENY
+      X-Content-Type-Options: nosniff
+      X-XSS-Protection: "1; mode=block"
+      Referrer-Policy: strict-origin-when-cross-origin
+      Strict-Transport-Security: "max-age=31536000; includeSubDomains"
+    
+    tags:
+      Application: ChartIQ
+      Team: ChartIQ
+      Environment: prod
+      ManagedBy: terraform
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\config\prod\lambdas.yaml =====
+
+# Lambda Functions Configuration for Prod Environment
+# 
+# Lambda functions - with optional API Gateway integration
+
+# lambdas:
+#   # Simple Lambda without API Gateway
+#   - name: hello-world
+#     description: "Simple Hello World Lambda function"
+#     runtime: python3.11
+#     handler: index.lambda_handler
+#     timeout: 30
+#     memory_size: 512
+    
+#     # Deploy from S3 bucket (same bucket as CloudFront distributions)
+#     s3_bucket: example-prod  # Change to match your CloudFront distribution bucket name
+#     s3_key: lambda/hello-world.zip
+    
+#     # Environment variables
+#     environment_variables:
+#       ENVIRONMENT: prod
+#       LOG_LEVEL: WARN
+    
+#     # API Gateway Configuration - Expose Lambda via HTTP endpoint
+#     api_gateway:
+#       enabled: true
+#       path: hello
+#       http_method: ANY
+#       stage_name: prod
+#       enable_xray: true
+#       throttling_burst_limit: 10000
+#       throttling_rate_limit: 20000
+    
+#     # CloudWatch Logs retention
+#     log_retention_days: 30
+    
+#     tags:
+#       AppID: ASP0002996
+#       Owner: chartiq-team@spglobal.com
+#       Component: hello-world
+
+  # Example: Lambda WITH API Gateway (commented out - uncomment to enable)
+  # - name: api-function
+  #   description: "Lambda exposed via API Gateway"
+  #   runtime: python3.11
+  #   handler: index.lambda_handler
+  #   timeout: 30
+  #   memory_size: 512
+  #   
+  #   s3_bucket: example-prod
+  #   s3_key: lambda/api-function.zip
+  #   
+  #   environment_variables:
+  #     ENVIRONMENT: prod
+  #   
+  #   # API Gateway Configuration - Expose Lambda via HTTP endpoint
+  #   api_gateway:
+  #     enabled: true
+  #     path: api
+  #     http_method: ANY
+  #     stage_name: prod
+  #     enable_xray: true
+  #     throttling_burst_limit: 10000
+  #     throttling_rate_limit: 20000
+  #   
+  #   log_retention_days: 30
+  #   
+  #   tags:
+  #     Component: api-function
+
+  # Add more Lambda functions as needed
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\config\staging\distributions.yaml =====
+
+# =============================================================================
+# ChartIQ AWS Infrastructure - Staging Environment
+# =============================================================================
+# This is for pre-production testing
+#
+# AWS Account Configuration
+# -------------------------
+# REQUIRED: Specify the AWS Account ID where resources will be created
+# This must match the account where dart-finops-automation-role exists
+aws_account_id: "745747212857"  # MI Platform Non-Prod (same as dev)
+
+# Route53 Configuration
+# ---------------------
+# REQUIRED: Specify the Route53 Hosted Zone ID for your domain
+# This is used for:
+#   1. ACM certificate validation (automatic DNS validation)
+#   2. Creating DNS records for CloudFront distributions
+#
+# To find your zone ID:
+#   aws route53 list-hosted-zones --query "HostedZones[?Name=='chartiq.com.'].Id" --output text
+route53_zone_id: "Z03288031RR00JWZLJC59"  # Same as dev
+
+# Distributions Configuration
+# ---------------------------
+# S3 buckets and CloudFront distributions are managed together in environments/staging/
+
+distributions: []
+  # Add staging distributions here when needed
+  # Example:
+  # - name: my-app-staging
+  #   enabled: true
+  #   domain: staging.example.com
+  #   s3_bucket: my-app-staging-bucket
+  #   certificate_arn: arn:aws:acm:us-east-1:ACCOUNT:certificate/ID
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\config\staging\lambdas.yaml =====
+
+# Lambda Functions Configuration for Staging Environment
+# 
+# Lambda functions - with optional API Gateway integration
+
+# lambdas:
+#   # Simple Lambda without API Gateway
+#   - name: hello-world
+#     description: "Simple Hello World Lambda function"
+#     runtime: python3.11
+#     handler: index.lambda_handler
+#     timeout: 30
+#     memory_size: 256
+    
+#     # Deploy from S3 bucket (same bucket as CloudFront distributions)
+#     s3_bucket: example-staging  # Change to match your CloudFront distribution bucket name
+#     s3_key: lambda/hello-world.zip
+    
+#     # Environment variables
+#     environment_variables:
+#       ENVIRONMENT: staging
+#       LOG_LEVEL: INFO
+    
+#     # API Gateway Configuration - Expose Lambda via HTTP endpoint
+#     api_gateway:
+#       enabled: true
+#       path: hello
+#       http_method: ANY
+#       stage_name: staging
+#       enable_xray: true
+#       throttling_burst_limit: 5000
+#       throttling_rate_limit: 10000
+    
+#     # CloudWatch Logs retention
+#     log_retention_days: 14
+    
+#     tags:
+#       AppID: ASP0002996
+#       Owner: chartiq-team@spglobal.com
+#       Component: hello-world
+
+  # Example: Lambda WITH API Gateway (commented out - uncomment to enable)
+  # - name: api-function
+  #   description: "Lambda exposed via API Gateway"
+  #   runtime: python3.11
+  #   handler: index.lambda_handler
+  #   timeout: 30
+  #   memory_size: 256
+  #   
+  #   s3_bucket: example-staging
+  #   s3_key: lambda/api-function.zip
+  #   
+  #   environment_variables:
+  #     ENVIRONMENT: staging
+  #   
+  #   # API Gateway Configuration - Expose Lambda via HTTP endpoint
+  #   api_gateway:
+  #     enabled: true
+  #     path: api
+  #     http_method: ANY
+  #     stage_name: staging
+  #     enable_xray: true
+  #     throttling_burst_limit: 5000
+  #     throttling_rate_limit: 10000
+  #   
+  #   log_retention_days: 14
+  #   
+  #   tags:
+  #     Component: api-function
+
+  # Add more Lambda functions as needed
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\dev\Makefile =====
+
+GOPATH ?= $(shell go env GOPATH 2>/dev/null || echo $$HOME/go)
+GOBIN ?= $(shell go env GOBIN 2>/dev/null || echo $$(GOPATH)/bin)
+
+ENVIRONMENT := dev
+AWS_REGION := us-east-1
+AWS_ACCOUNT_ID := 745747212857
+
+.PHONY: pr
+pr: fmt validate lint sec
+
+.PHONY: env
+env:
+	@printf '\nENVIRONMENT PARAMETERS\n'
+	@printf '======================\n'
+	@printf 'Environment    : %s\n' $(ENVIRONMENT)
+	@printf 'AWS Region     : %s\n' $(AWS_REGION)
+	@printf 'AWS Account ID : %s\n' $(AWS_ACCOUNT_ID)
+	@printf '\n'
+
+.PHONY: docs
+docs:
+	@if ! command -v terraform-docs &> /dev/null; then \
+		echo "Installing terraform-docs..."; \
+		go install github.com/terraform-docs/terraform-docs@latest; \
+	fi
+	@terraform-docs markdown table . > TERRAFORM_DOCS.md
+	@echo "Documentation generated in TERRAFORM_DOCS.md"
+
+.PHONY: init
+init: env
+	@echo "Initializing Terraform..."
+	@terraform init -upgrade
+
+.PHONY: init-no-backend
+init-no-backend:
+	@echo "Initializing Terraform without backend..."
+	@terraform init -upgrade -backend=false
+
+.PHONY: plan
+plan: init
+	@echo "Creating Terraform plan..."
+	@terraform plan -out=terraform.tfplan
+
+.PHONY: apply
+apply:
+	@echo "Applying Terraform changes..."
+	@if [ ! -f terraform.tfplan ]; then \
+		echo "No plan file found. Running plan first..."; \
+		$(MAKE) plan; \
+	fi
+	@terraform apply terraform.tfplan
+	@rm -f terraform.tfplan
+
+.PHONY: destroy
+destroy: init
+	@echo "WARNING: This will destroy all resources!"
+	@echo "Press Ctrl+C to cancel, or wait 5 seconds to continue..."
+	@sleep 5
+	@terraform destroy
+
+.PHONY: state
+state: env
+	@terraform state list
+
+.PHONY: fmt
+fmt: init-no-backend
+	@echo "Formatting Terraform files..."
+	@terraform fmt -recursive .
+
+.PHONY: validate
+validate: init-no-backend
+	@echo "Validating Terraform configuration..."
+	@terraform validate .
+
+.PHONY: lint
+lint: init-no-backend
+	@echo "Running tflint..."
+	@if ! command -v tflint &> /dev/null; then \
+		echo "Installing tflint..."; \
+		go install github.com/terraform-linters/tflint@latest; \
+	fi
+	@tflint --init
+	@tflint
+
+.PHONY: sec
+sec: init-no-backend
+	@echo "Running security scan with tfsec..."
+	@if ! command -v tfsec &> /dev/null; then \
+		echo "Installing tfsec..."; \
+		go install github.com/aquasecurity/tfsec/cmd/tfsec@latest; \
+	fi
+	@tfsec . --minimum-severity MEDIUM
+
+.PHONY: clean
+clean:
+	@echo "Cleaning Terraform artifacts..."
+	@rm -rf .terraform
+	@rm -f .terraform.lock.hcl
+	@rm -f terraform.tfplan
+	@rm -rf .artifacts
+
+.PHONY: help
+help:
+	@echo "ChartIQ AWS Infrastructure - Development Environment"
+	@echo ""
+	@echo "Available targets:"
+	@echo "  make pr       - Run all pre-commit checks (fmt, validate, lint, sec)"
+	@echo "  make env      - Display environment configuration"
+	@echo "  make init     - Initialize Terraform with backend"
+	@echo "  make plan     - Create Terraform execution plan"
+	@echo "  make apply    - Apply Terraform changes"
+	@echo "  make destroy  - Destroy all Terraform-managed resources"
+	@echo "  make state    - List all resources in state"
+	@echo "  make fmt      - Format Terraform files"
+	@echo "  make validate - Validate Terraform configuration"
+	@echo "  make lint     - Run tflint"
+	@echo "  make sec      - Run security scanning with tfsec"
+	@echo "  make docs     - Generate module documentation"
+	@echo "  make clean    - Remove Terraform artifacts"
+	@echo "  make help     - Show this help message"
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\dev\cloudfront\backend.tf =====
+
+terraform {
+  backend "s3" {
+    bucket       = "state.us-east-1.mi-platform.nonprod"
+    key          = "projects/chartiq-app-aws-infra/dev/terraform.tfstate"
+    region       = "us-east-1"
+    encrypt      = true
+    kms_key_id   = "arn:aws:kms:us-east-1:745747212857:key/f75bfdb2-ad2b-4cb7-8cfd-e83e71e08519"
+    use_lockfile = true
+  }
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\dev\cloudfront\distribution-outputs.tf =====
+
+output "distributions" {
+  value = {
+    for name, dist in module.cloudfront_distributions :
+    name => {
+      id  = dist.id
+      arn = dist.arn
+    }
+  }
+  description = "CloudFront distributions with ARNs for S3 bucket policy updates."
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\dev\cloudfront\distributions.tf =====
+
+# Create ACM certificates for CloudFront (must be in us-east-1)
+# NOTE: Commented out for local testing due to Route53 permissions
+# Uncomment when using in CI/CD with proper IAM role
+# module "certificates" {
+#   source  = "repo.ihsmarkit.com/terraform__foundation/certificate/aws"
+#   version = ">= 3.0"
+#
+#   providers = {
+#     aws = aws.us_east_1
+#   }
+#
+#   for_each = local.distributions
+#
+#   # Sanitize domain name: replace dots with hyphens for resource name
+#   name    = replace(each.value.domain, ".", "-")
+#   zone_id = local.route53_zone_id
+#
+#   tags = merge(
+#     lookup(each.value, "tags", {}),
+#     {
+#       Name         = each.value.domain
+#       Distribution = each.key
+#       Environment  = var.environment
+#     }
+#   )
+# }
+
+# Create log bucket for CloudFront and S3 access logs using project-logging module
+# This module has the required permissions for CloudFront logging built-in
+module "log_bucket" {
+  source  = "repo.ihsmarkit.com/terraform__foundation/project-logging/aws"
+  version = ">= 3.0"
+
+  domain = var.log_bucket
+
+  tags = {
+    Purpose     = "logging"
+    Environment = var.environment
+  }
+}
+
+# S3 bucket policy for primary bucket (allows CloudFront access)
+data "aws_iam_policy_document" "primary_bucket" {
+  for_each = local.distributions
+
+  statement {
+    sid    = "AllowCloudFrontServicePrincipal"
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["cloudfront.amazonaws.com"]
+    }
+
+    actions = [
+      "s3:GetObject"
+    ]
+
+    resources = [
+      "arn:aws:s3:::${replace(lookup(each.value, "s3_bucket", "${each.key}-${var.environment}"), ".", "-")}/*"
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "AWS:SourceArn"
+      values   = [module.cloudfront_distributions[each.key].arn]
+    }
+  }
+}
+
+# Create S3 buckets for CloudFront distributions
+module "s3_buckets" {
+  source  = "repo.ihsmarkit.com/terraform__foundation/bucket/aws"
+  version = ">= 7.0"
+
+  for_each = local.distributions
+
+  name            = replace(lookup(each.value, "s3_bucket", "${each.key}-${var.environment}"), ".", "-")
+  force_destroy   = false
+  kms_key_id      = null
+  log_bucket      = "logs.us-east-1.${var.log_bucket}"
+  log_prefix      = "${each.key}/"
+  cloudfront_arns = []
+
+  # Use policy_documents parameter with data source (not cloudfront_arns)
+  policy_documents = [
+    data.aws_iam_policy_document.primary_bucket[each.key].json
+  ]
+
+  lifecycle_rules = {
+    cleanup = {
+      filter                        = { prefix = "" }
+      transition                    = [{ days = 30, storage_class = "INTELLIGENT_TIERING" }]
+      noncurrent_version_transition = [{ noncurrent_days = 7, storage_class = "INTELLIGENT_TIERING" }]
+      noncurrent_version_expiration = { noncurrent_days = 30, newer_noncurrent_versions = 2 }
+    }
+  }
+
+  tags = merge(
+    lookup(each.value, "tags", {}),
+    {
+      Name         = each.key
+      Environment  = var.environment
+      Distribution = each.key
+    }
+  )
+}
+
+# Create CloudFront distributions
+module "cloudfront_distributions" {
+  source   = "../../../modules/cloudfront-distribution"
+  for_each = local.cloudfront_distributions
+
+  name            = each.key
+  domain          = each.value.domain
+  zone_id         = each.value.zone_id
+  dns_names       = each.value.dns_names
+  certificate_arn = each.value.certificate_arn
+  log_bucket      = "logs.us-east-1.${var.log_bucket}"
+
+  s3_bucket_regional_domain_name           = local.bucket_regional_domain_names[each.key]
+  secondary_s3_bucket_regional_domain_name = each.value.secondary_bucket != null ? lookup(local.bucket_regional_domain_names, each.value.secondary_bucket, null) : null
+
+  root_object            = each.value.root_object
+  error_object           = each.value.error_object
+  price_class            = each.value.price_class
+  viewer_protocol_policy = each.value.viewer_protocol_policy
+  enable_spa_handling    = each.value.enable_spa_handling
+
+  oidc_client_id = each.value.oidc_client_id
+  oidc_issuer    = each.value.oidc_issuer
+  oidc_scopes    = each.value.oidc_scopes
+  auth_dns_name  = each.value.auth_dns_name
+
+  failover_criteria = {
+    status_codes = each.value.failover_status_codes
+  }
+
+  custom_headers = each.value.custom_headers
+
+  tags = merge(
+    each.value.tags,
+    {
+      Environment = var.environment
+    }
+  )
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\dev\cloudfront\locals.tf =====
+
+# Load distributions configuration from YAML
+locals {
+  distributions_raw = yamldecode(file(var.distributions_config_file))
+
+  # Extract Route53 Zone ID from config
+  route53_zone_id = local.distributions_raw.route53_zone_id
+
+  # Filter only enabled distributions
+  distributions = {
+    for dist in local.distributions_raw.distributions :
+    dist.name => dist
+    if lookup(dist, "enabled", true)
+  }
+
+  # Bucket regional domain names for CloudFront origin (buckets created in same state using module)
+  bucket_regional_domain_names = {
+    for name, dist in local.distributions :
+    name => "${replace(lookup(dist, "s3_bucket", "${name}-${var.environment}"), ".", "-")}.s3.${var.aws_region}.amazonaws.com"
+  }
+
+  # CloudFront distribution configurations
+  cloudfront_distributions = {
+    for name, dist in local.distributions :
+    name => {
+      domain = dist.domain
+      # Use certificate_arn from config, no auto-creation for local testing
+      certificate_arn        = dist.certificate_arn
+      zone_id                = lookup(lookup(dist, "dns", {}), "zone_id", local.route53_zone_id)
+      dns_names              = lookup(lookup(dist, "dns", {}), "aliases", ["."])
+      root_object            = lookup(lookup(dist, "cloudfront", {}), "root_object", "index.html")
+      error_object           = lookup(lookup(dist, "cloudfront", {}), "error_object", "/index.html")
+      price_class            = lookup(lookup(dist, "cloudfront", {}), "price_class", "PriceClass_100")
+      viewer_protocol_policy = lookup(lookup(dist, "cloudfront", {}), "viewer_protocol_policy", "redirect-to-https")
+      enable_spa_handling    = lookup(lookup(dist, "cloudfront", {}), "enable_spa_handling", true)
+
+      # Authentication
+      oidc_client_id = lookup(lookup(dist, "authentication", {}), "oidc_client_id", null)
+      oidc_issuer    = lookup(lookup(dist, "authentication", {}), "oidc_issuer", "https://sam.ihsmarkit.com:443/sso/oauth2")
+      oidc_scopes    = toset(lookup(lookup(dist, "authentication", {}), "oidc_scopes", ["openid", "email", "profile"]))
+      auth_dns_name  = lookup(lookup(dist, "authentication", {}), "auth_dns_name", null)
+
+      # Failover
+      secondary_bucket      = lookup(lookup(dist, "cloudfront", {}), "secondary_bucket", null)
+      failover_status_codes = toset(lookup(lookup(lookup(dist, "cloudfront", {}), "failover", {}), "status_codes", [500, 502, 503, 504]))
+
+      # Custom headers
+      custom_headers = lookup(dist, "headers", {})
+
+      # Cache configuration
+      cache_min_ttl            = lookup(lookup(lookup(dist, "cloudfront", {}), "cache", {}), "min_ttl", 0)
+      cache_default_ttl        = lookup(lookup(lookup(dist, "cloudfront", {}), "cache", {}), "default_ttl", 0)
+      cache_max_ttl            = lookup(lookup(lookup(dist, "cloudfront", {}), "cache", {}), "max_ttl", 0)
+      use_managed_cache_policy = lookup(lookup(dist, "cloudfront", {}), "use_managed_cache_policy", false)
+      cache_policy_id          = lookup(lookup(dist, "cloudfront", {}), "cache_policy_id", null)
+      origin_request_policy_id = lookup(lookup(dist, "cloudfront", {}), "origin_request_policy_id", null)
+
+      # Tags
+      tags = lookup(dist, "tags", {})
+    }
+  }
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\dev\cloudfront\variables.tf =====
+
+variable "aws_region" {
+  type        = string
+  default     = "us-east-1"
+  description = "The AWS region to deploy resources."
+}
+
+variable "environment" {
+  type        = string
+  default     = "dev"
+  description = "The environment name."
+}
+
+variable "log_bucket" {
+  type        = string
+  default     = "chartiq-cloudfront-logs-dev"
+  description = "The S3 bucket for CloudFront and S3 access logs."
+}
+
+variable "distributions_config_file" {
+  type        = string
+  default     = "../../../config/dev/distributions.yaml"
+  description = "Path to the YAML file containing distribution configurations."
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\dev\cloudfront\versions.tf =====
+
+terraform {
+  required_version = ">= 1.0"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 6.0, < 7"
+    }
+    http = {
+      source  = "hashicorp/http"
+      version = ">= 3.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = var.aws_region
+
+  default_tags {
+    tags = {
+      Environment = "dev"
+      Project     = "chartiq"
+      ManagedBy   = "terraform"
+      Repository  = "spglobal-innersource/chartiq-app-aws-infra"
+      AppID       = "ASP0002996"
+      Owner       = "chartiq-operations-support@spglobal.com"
+      BU          = "MI"
+    }
+  }
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\dev\lambda\backend.tf =====
+
+terraform {
+  backend "s3" {
+    bucket       = "state.us-east-1.mi-platform.nonprod"
+    key          = "projects/chartiq-app-aws-infra/dev/lambda/terraform.tfstate"
+    region       = "us-east-1"
+    encrypt      = true
+    kms_key_id   = "arn:aws:kms:us-east-1:745747212857:key/f75bfdb2-ad2b-4cb7-8cfd-e83e71e08519"
+    use_lockfile = true
+  }
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\dev\lambda\lambda-outputs.tf =====
+
+# Lambda Outputs
+
+output "lambda_function_arns" {
+  description = "ARNs of all Lambda functions"
+  value = {
+    for k, v in module.lambda_functions : k => v.arn
+  }
+}
+
+output "lambda_function_names" {
+  description = "Names of all Lambda functions"
+  value = {
+    for k, v in module.lambda_functions : k => v.name
+  }
+}
+
+output "lambda_role_arns" {
+  description = "IAM Role ARNs for Lambda functions"
+  value = {
+    for k, v in module.lambda_functions : k => v.role.arn
+  }
+}
+
+# API Gateway Outputs
+
+output "api_gateway_ids" {
+  description = "IDs of API Gateways for Lambda functions"
+  value = {
+    for k, v in module.api_gateway : k => v.api_id
+  }
+}
+
+output "api_gateway_invoke_urls" {
+  description = "Invoke URLs for API Gateways (Lambda endpoints)"
+  value = {
+    for k, v in module.api_gateway : k => v.invoke_url
+  }
+}
+
+output "api_gateway_execution_arns" {
+  description = "Execution ARNs for API Gateways"
+  value = {
+    for k, v in module.api_gateway : k => v.execution_arn
+  }
+}
+
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\dev\lambda\lambda.tf =====
+
+# Lambda Functions Configuration
+# Lambda functions with optional API Gateway integration
+
+locals {
+  lambda_config = try(yamldecode(file("../../../config/${var.environment}/lambdas.yaml")), { lambdas = [] })
+  lambdas       = { for lambda in local.lambda_config.lambdas : lambda.name => lambda }
+
+  # Filter lambdas with API Gateway enabled
+  api_gateway_lambdas = { for k, v in local.lambdas : k => v if lookup(lookup(v, "api_gateway", {}), "enabled", false) }
+}
+
+# Lambda Functions (foundation module handles IAM roles automatically)
+module "lambda_functions" {
+  source  = "repo.ihsmarkit.com/terraform__foundation/lambda/aws"
+  version = ">= 4.0"
+
+  for_each = local.lambdas
+
+  name        = "${each.value.name}-${var.environment}"
+  description = lookup(each.value, "description", "Lambda function for ${each.value.name}")
+
+  runtime     = each.value.runtime
+  handler     = each.value.handler
+  timeout     = lookup(each.value, "timeout", 30)
+  memory_size = lookup(each.value, "memory_size", 256)
+
+  # Code deployment from S3
+  deployment = {
+    package_type = "zip"
+    zip = {
+      bucket = {
+        name = each.value.s3_bucket
+        key  = each.value.s3_key
+      }
+    }
+  }
+
+  # Environment variables
+  env = lookup(each.value, "environment_variables", null)
+
+  # Tags from YAML config only (module handles Name, Environment, ManagedBy automatically)
+  tags = lookup(each.value, "tags", {})
+}
+
+# API Gateway for Lambda Functions (optional)
+# Creates API Gateway REST API for each Lambda function that has API Gateway enabled
+module "api_gateway" {
+  source = "../../../modules/api-gateway"
+
+  for_each = local.api_gateway_lambdas
+
+  name        = "${each.value.name}-${var.environment}-api"
+  description = "API Gateway for ${each.value.name}"
+
+  # Lambda integration
+  lambda_invoke_arn    = module.lambda_functions[each.key].invoke_arn
+  lambda_function_name = module.lambda_functions[each.key].name
+
+  # API Gateway configuration from lambdas.yaml
+  path_part   = lookup(each.value.api_gateway, "path", each.value.name)
+  http_method = lookup(each.value.api_gateway, "http_method", "ANY")
+  stage_name  = lookup(each.value.api_gateway, "stage_name", var.environment)
+
+  # Monitoring and logging
+  enable_xray        = lookup(each.value.api_gateway, "enable_xray", true)
+  enable_metrics     = lookup(each.value.api_gateway, "enable_metrics", true)
+  log_level          = lookup(each.value.api_gateway, "log_level", "INFO")
+  log_retention_days = lookup(each.value, "log_retention_days", 14)
+  enable_data_trace  = lookup(each.value.api_gateway, "enable_data_trace", false)
+
+  # Throttling
+  throttling_burst_limit = lookup(each.value.api_gateway, "throttling_burst_limit", 5000)
+  throttling_rate_limit  = lookup(each.value.api_gateway, "throttling_rate_limit", 10000)
+
+  tags = merge(
+    lookup(each.value, "tags", {}),
+    {
+      Name        = "${each.value.name}-${var.environment}-api"
+      Environment = var.environment
+      ManagedBy   = "Terraform"
+    }
+  )
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\dev\lambda\variables.tf =====
+
+variable "aws_region" {
+  type        = string
+  default     = "us-east-1"
+  description = "The AWS region to deploy resources."
+}
+
+variable "environment" {
+  type        = string
+  default     = "dev"
+  description = "The environment name."
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\dev\lambda\versions.tf =====
+
+terraform {
+  required_version = ">= 1.0"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 6.0, < 7"
+    }
+    http = {
+      source  = "hashicorp/http"
+      version = ">= 3.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = var.aws_region
+
+  default_tags {
+    tags = {
+      Environment = "dev"
+      Project     = "chartiq"
+      ManagedBy   = "terraform"
+      Repository  = "spglobal-innersource/chartiq-app-aws-infra"
+      AppID       = "ASP0002996"
+      Owner       = "chartiq-operations-support@spglobal.com"
+      BU          = "MI"
+    }
+  }
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\prod\Makefile =====
+
+GOPATH ?= $(shell go env GOPATH 2>/dev/null || echo $$HOME/go)
+GOBIN ?= $(shell go env GOBIN 2>/dev/null || echo $$(GOPATH)/bin)
+
+ENVIRONMENT := dev
+AWS_REGION := us-east-1
+AWS_ACCOUNT_ID := 745747212857
+
+.PHONY: pr
+pr: fmt validate lint sec
+
+.PHONY: env
+env:
+	@printf '\nENVIRONMENT PARAMETERS\n'
+	@printf '======================\n'
+	@printf 'Environment    : %s\n' $(ENVIRONMENT)
+	@printf 'AWS Region     : %s\n' $(AWS_REGION)
+	@printf 'AWS Account ID : %s\n' $(AWS_ACCOUNT_ID)
+	@printf '\n'
+
+.PHONY: docs
+docs:
+	@if ! command -v terraform-docs &> /dev/null; then \
+		echo "Installing terraform-docs..."; \
+		go install github.com/terraform-docs/terraform-docs@latest; \
+	fi
+	@terraform-docs markdown table . > TERRAFORM_DOCS.md
+	@echo "Documentation generated in TERRAFORM_DOCS.md"
+
+.PHONY: init
+init: env
+	@echo "Initializing Terraform..."
+	@terraform init -upgrade
+
+.PHONY: init-no-backend
+init-no-backend:
+	@echo "Initializing Terraform without backend..."
+	@terraform init -upgrade -backend=false
+
+.PHONY: plan
+plan: init
+	@echo "Creating Terraform plan..."
+	@terraform plan -out=terraform.tfplan
+
+.PHONY: apply
+apply:
+	@echo "Applying Terraform changes..."
+	@if [ ! -f terraform.tfplan ]; then \
+		echo "No plan file found. Running plan first..."; \
+		$(MAKE) plan; \
+	fi
+	@terraform apply terraform.tfplan
+	@rm -f terraform.tfplan
+
+.PHONY: destroy
+destroy: init
+	@echo "WARNING: This will destroy all resources!"
+	@echo "Press Ctrl+C to cancel, or wait 5 seconds to continue..."
+	@sleep 5
+	@terraform destroy
+
+.PHONY: state
+state: env
+	@terraform state list
+
+.PHONY: fmt
+fmt: init-no-backend
+	@echo "Formatting Terraform files..."
+	@terraform fmt -recursive .
+
+.PHONY: validate
+validate: init-no-backend
+	@echo "Validating Terraform configuration..."
+	@terraform validate .
+
+.PHONY: lint
+lint: init-no-backend
+	@echo "Running tflint..."
+	@if ! command -v tflint &> /dev/null; then \
+		echo "Installing tflint..."; \
+		go install github.com/terraform-linters/tflint@latest; \
+	fi
+	@tflint --init
+	@tflint
+
+.PHONY: sec
+sec: init-no-backend
+	@echo "Running security scan with tfsec..."
+	@if ! command -v tfsec &> /dev/null; then \
+		echo "Installing tfsec..."; \
+		go install github.com/aquasecurity/tfsec/cmd/tfsec@latest; \
+	fi
+	@tfsec . --minimum-severity MEDIUM
+
+.PHONY: clean
+clean:
+	@echo "Cleaning Terraform artifacts..."
+	@rm -rf .terraform
+	@rm -f .terraform.lock.hcl
+	@rm -f terraform.tfplan
+	@rm -rf .artifacts
+
+.PHONY: help
+help:
+	@echo "ChartIQ AWS Infrastructure - Development Environment"
+	@echo ""
+	@echo "Available targets:"
+	@echo "  make pr       - Run all pre-commit checks (fmt, validate, lint, sec)"
+	@echo "  make env      - Display environment configuration"
+	@echo "  make init     - Initialize Terraform with backend"
+	@echo "  make plan     - Create Terraform execution plan"
+	@echo "  make apply    - Apply Terraform changes"
+	@echo "  make destroy  - Destroy all Terraform-managed resources"
+	@echo "  make state    - List all resources in state"
+	@echo "  make fmt      - Format Terraform files"
+	@echo "  make validate - Validate Terraform configuration"
+	@echo "  make lint     - Run tflint"
+	@echo "  make sec      - Run security scanning with tfsec"
+	@echo "  make docs     - Generate module documentation"
+	@echo "  make clean    - Remove Terraform artifacts"
+	@echo "  make help     - Show this help message"
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\prod\cloudfront\backend.tf =====
+
+terraform {
+  backend "s3" {
+    bucket       = "state.us-east-1.mi-platform.prod"
+    key          = "projects/chartiq-app-aws-infra/prod/terraform.tfstate"
+    region       = "us-east-1"
+    encrypt      = true
+    kms_key_id   = "arn:aws:kms:us-east-1:541729437036:alias/mi-platform-state"
+    use_lockfile = true
+  }
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\prod\cloudfront\distribution-outputs.tf =====
+
+output "distributions" {
+  value = {
+    for name, dist in module.cloudfront_distributions :
+    name => {
+      id  = dist.id
+      arn = dist.arn
+    }
+  }
+  description = "CloudFront distributions with IDs and ARNs"
+}
+
+output "log_bucket" {
+  value       = var.log_bucket
+  description = "The S3 bucket used for access logs."
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\prod\cloudfront\distributions.tf =====
+
+# Create log bucket for CloudFront and S3 access logs using project-logging module
+# This module has the required permissions for CloudFront logging built-in
+module "log_bucket" {
+  source  = "repo.ihsmarkit.com/terraform__foundation/project-logging/aws"
+  version = ">= 3.0"
+
+  domain = var.log_bucket
+
+  tags = {
+    Purpose     = "logging"
+    Environment = var.environment
+  }
+}
+
+# S3 bucket policy for primary bucket (allows CloudFront access)
+data "aws_iam_policy_document" "primary_bucket" {
+  for_each = local.distributions
+
+  statement {
+    sid    = "AllowCloudFrontServicePrincipal"
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["cloudfront.amazonaws.com"]
+    }
+
+    actions = [
+      "s3:GetObject"
+    ]
+
+    resources = [
+      "arn:aws:s3:::${replace(lookup(each.value, "s3_bucket", "${each.key}-${var.environment}"), ".", "-")}/*"
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "AWS:SourceArn"
+      values   = [module.cloudfront_distributions[each.key].arn]
+    }
+  }
+}
+
+# S3 buckets created in same state using module
+module "s3_buckets" {
+  source  = "repo.ihsmarkit.com/terraform__foundation/bucket/aws"
+  version = ">= 7.0"
+
+  for_each = local.distributions
+
+  name            = replace(lookup(each.value, "s3_bucket", "${each.key}-${var.environment}"), ".", "-")
+  force_destroy   = false
+  kms_key_id      = null
+  log_bucket      = "logs.us-east-1.${var.log_bucket}"
+  log_prefix      = "${each.key}/"
+  cloudfront_arns = []
+
+  # Use policy_documents parameter with data source (not cloudfront_arns)
+  policy_documents = [
+    data.aws_iam_policy_document.primary_bucket[each.key].json
+  ]
+
+  lifecycle_rules = {
+    cleanup = {
+      filter                        = { prefix = "" }
+      transition                    = [{ days = 30, storage_class = "INTELLIGENT_TIERING" }]
+      noncurrent_version_transition = [{ noncurrent_days = 7, storage_class = "INTELLIGENT_TIERING" }]
+      noncurrent_version_expiration = { noncurrent_days = 30, newer_noncurrent_versions = 2 }
+    }
+  }
+
+  tags = merge(
+    lookup(each.value, "tags", {}),
+    {
+      Name         = each.key
+      Environment  = var.environment
+      Distribution = each.key
+    }
+  )
+}
+
+# Create CloudFront distributions
+module "cloudfront_distributions" {
+  source   = "../../../modules/cloudfront-distribution"
+  for_each = local.cloudfront_distributions
+
+  name            = each.key
+  domain          = each.value.domain
+  zone_id         = each.value.zone_id
+  dns_names       = each.value.dns_names
+  certificate_arn = each.value.certificate_arn
+  log_bucket      = "logs.us-east-1.${var.log_bucket}"
+
+  s3_bucket_regional_domain_name           = local.bucket_regional_domain_names[each.key]
+  secondary_s3_bucket_regional_domain_name = each.value.secondary_bucket != null ? lookup(local.bucket_regional_domain_names, each.value.secondary_bucket, null) : null
+
+  root_object            = each.value.root_object
+  error_object           = each.value.error_object
+  price_class            = each.value.price_class
+  viewer_protocol_policy = each.value.viewer_protocol_policy
+  enable_spa_handling    = each.value.enable_spa_handling
+
+  oidc_client_id = each.value.oidc_client_id
+  oidc_issuer    = each.value.oidc_issuer
+  oidc_scopes    = each.value.oidc_scopes
+  auth_dns_name  = each.value.auth_dns_name
+
+  failover_criteria = {
+    status_codes = each.value.failover_status_codes
+  }
+
+  custom_headers = each.value.custom_headers
+
+  tags = merge(
+    each.value.tags,
+    {
+      Environment = var.environment
+    }
+  )
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\prod\cloudfront\locals.tf =====
+
+# Load distributions configuration from YAML
+locals {
+  distributions_raw = yamldecode(file(var.distributions_config_file))
+
+  # Extract Route53 Zone ID from config
+  route53_zone_id = local.distributions_raw.route53_zone_id
+
+  # Filter only enabled distributions
+  distributions = {
+    for dist in local.distributions_raw.distributions :
+    dist.name => dist
+    if lookup(dist, "enabled", true)
+  }
+
+  # Bucket regional domain names for CloudFront origin (buckets created in same state using module)
+  bucket_regional_domain_names = {
+    for name, dist in local.distributions :
+    name => "${replace(lookup(dist, "s3_bucket", "${name}-${var.environment}"), ".", "-")}.s3.${var.aws_region}.amazonaws.com"
+  }
+
+  # CloudFront distribution configurations
+  cloudfront_distributions = {
+    for name, dist in local.distributions :
+    name => {
+      domain = dist.domain
+      # Use certificate_arn from config, no auto-creation for local testing
+      certificate_arn        = dist.certificate_arn
+      zone_id                = lookup(lookup(dist, "dns", {}), "zone_id", local.route53_zone_id)
+      dns_names              = lookup(lookup(dist, "dns", {}), "aliases", ["."])
+      root_object            = lookup(lookup(dist, "cloudfront", {}), "root_object", "index.html")
+      error_object           = lookup(lookup(dist, "cloudfront", {}), "error_object", "/index.html")
+      price_class            = lookup(lookup(dist, "cloudfront", {}), "price_class", "PriceClass_100")
+      viewer_protocol_policy = lookup(lookup(dist, "cloudfront", {}), "viewer_protocol_policy", "redirect-to-https")
+      enable_spa_handling    = lookup(lookup(dist, "cloudfront", {}), "enable_spa_handling", true)
+
+      # Authentication
+      oidc_client_id = lookup(lookup(dist, "authentication", {}), "oidc_client_id", null)
+      oidc_issuer    = lookup(lookup(dist, "authentication", {}), "oidc_issuer", "https://sam.ihsmarkit.com:443/sso/oauth2")
+      oidc_scopes    = toset(lookup(lookup(dist, "authentication", {}), "oidc_scopes", ["openid", "email", "profile"]))
+      auth_dns_name  = lookup(lookup(dist, "authentication", {}), "auth_dns_name", null)
+
+      # Failover
+      secondary_bucket      = lookup(lookup(dist, "cloudfront", {}), "secondary_bucket", null)
+      failover_status_codes = toset(lookup(lookup(lookup(dist, "cloudfront", {}), "failover", {}), "status_codes", [500, 502, 503, 504]))
+
+      # Custom headers
+      custom_headers = lookup(dist, "headers", {})
+
+      # Cache configuration
+      cache_min_ttl            = lookup(lookup(lookup(dist, "cloudfront", {}), "cache", {}), "min_ttl", 0)
+      cache_default_ttl        = lookup(lookup(lookup(dist, "cloudfront", {}), "cache", {}), "default_ttl", 0)
+      cache_max_ttl            = lookup(lookup(lookup(dist, "cloudfront", {}), "cache", {}), "max_ttl", 0)
+      use_managed_cache_policy = lookup(lookup(dist, "cloudfront", {}), "use_managed_cache_policy", false)
+      cache_policy_id          = lookup(lookup(dist, "cloudfront", {}), "cache_policy_id", null)
+      origin_request_policy_id = lookup(lookup(dist, "cloudfront", {}), "origin_request_policy_id", null)
+
+      # Tags
+      tags = lookup(dist, "tags", {})
+    }
+  }
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\prod\cloudfront\variables.tf =====
+
+variable "aws_region" {
+  type        = string
+  default     = "us-east-1"
+  description = "The AWS region to deploy resources."
+}
+
+variable "environment" {
+  type        = string
+  default     = "prod"
+  description = "The environment name."
+}
+
+variable "log_bucket" {
+  type        = string
+  default     = "chartiq-cloudfront-logs-prod"
+  description = "The S3 bucket for CloudFront and S3 access logs."
+}
+
+variable "distributions_config_file" {
+  type        = string
+  default     = "../../../config/prod/distributions.yaml"
+  description = "Path to the YAML file containing distribution configurations."
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\prod\cloudfront\versions.tf =====
+
+terraform {
+  required_version = ">= 1.0"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 6.0, < 7"
+    }
+    http = {
+      source  = "hashicorp/http"
+      version = ">= 3.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = var.aws_region
+
+  default_tags {
+    tags = {
+      Environment = "prod"
+      Project     = "chartiq"
+      ManagedBy   = "terraform"
+      Repository  = "spglobal-innersource/chartiq-app-aws-infra"
+      AppID       = "ASP0002996"
+      Owner       = "chartiq-operations-support@spglobal.com"
+      BU          = "MI"
+    }
+  }
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\prod\lambda\backend.tf =====
+
+terraform {
+  backend "s3" {
+    bucket       = "state.us-east-1.mi-platform.prod"
+    key          = "projects/chartiq-app-aws-infra/prod/lambda/terraform.tfstate"
+    region       = "us-east-1"
+    encrypt      = true
+    kms_key_id   = "arn:aws:kms:us-east-1:541729437036:alias/mi-platform-state"
+    use_lockfile = true
+  }
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\prod\lambda\lambda-outputs.tf =====
+
+# Lambda Outputs
+
+output "lambda_function_arns" {
+  description = "ARNs of all Lambda functions"
+  value = {
+    for k, v in module.lambda_functions : k => v.arn
+  }
+}
+
+output "lambda_function_names" {
+  description = "Names of all Lambda functions"
+  value = {
+    for k, v in module.lambda_functions : k => v.name
+  }
+}
+
+output "lambda_role_arns" {
+  description = "IAM Role ARNs for Lambda functions"
+  value = {
+    for k, v in module.lambda_functions : k => v.role.arn
+  }
+}
+
+# API Gateway Outputs
+
+output "api_gateway_ids" {
+  description = "IDs of API Gateways for Lambda functions"
+  value = {
+    for k, v in module.api_gateway : k => v.api_id
+  }
+}
+
+output "api_gateway_invoke_urls" {
+  description = "Invoke URLs for API Gateways (Lambda endpoints)"
+  value = {
+    for k, v in module.api_gateway : k => v.invoke_url
+  }
+}
+
+output "api_gateway_execution_arns" {
+  description = "Execution ARNs for API Gateways"
+  value = {
+    for k, v in module.api_gateway : k => v.execution_arn
+  }
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\prod\lambda\lambda.tf =====
+
+# Lambda Functions Configuration
+# Lambda functions with optional API Gateway integration
+
+locals {
+  lambda_config = try(yamldecode(file("../../../config/${var.environment}/lambdas.yaml")), { lambdas = [] })
+  lambdas       = { for lambda in local.lambda_config.lambdas : lambda.name => lambda }
+
+  # Filter lambdas with API Gateway enabled
+  api_gateway_lambdas = { for k, v in local.lambdas : k => v if lookup(lookup(v, "api_gateway", {}), "enabled", false) }
+}
+
+# Lambda Functions (foundation module handles IAM roles automatically)
+module "lambda_functions" {
+  source  = "repo.ihsmarkit.com/terraform__foundation/lambda/aws"
+  version = ">= 4.0"
+
+  for_each = local.lambdas
+
+  name        = "${each.value.name}-${var.environment}"
+  description = lookup(each.value, "description", "Lambda function for ${each.value.name}")
+
+  runtime     = each.value.runtime
+  handler     = each.value.handler
+  timeout     = lookup(each.value, "timeout", 30)
+  memory_size = lookup(each.value, "memory_size", 256)
+
+  # Code deployment from S3
+  deployment = {
+    package_type = "zip"
+    zip = {
+      bucket = {
+        name = each.value.s3_bucket
+        key  = each.value.s3_key
+      }
+    }
+  }
+
+  # Environment variables
+  env = lookup(each.value, "environment_variables", null)
+
+  # Tags from YAML config only (module handles Name, Environment, ManagedBy automatically)
+  tags = lookup(each.value, "tags", {})
+}
+
+# API Gateway for Lambda Functions (optional)
+# Creates API Gateway REST API for each Lambda function that has API Gateway enabled
+module "api_gateway" {
+  source = "../../../modules/api-gateway"
+
+  for_each = local.api_gateway_lambdas
+
+  name        = "${each.value.name}-${var.environment}-api"
+  description = "API Gateway for ${each.value.name}"
+
+  # Lambda integration
+  lambda_invoke_arn    = module.lambda_functions[each.key].invoke_arn
+  lambda_function_name = module.lambda_functions[each.key].name
+
+  # API Gateway configuration from lambdas.yaml
+  path_part   = lookup(each.value.api_gateway, "path", each.value.name)
+  http_method = lookup(each.value.api_gateway, "http_method", "ANY")
+  stage_name  = lookup(each.value.api_gateway, "stage_name", var.environment)
+
+  # Monitoring and logging
+  enable_xray        = lookup(each.value.api_gateway, "enable_xray", true)
+  enable_metrics     = lookup(each.value.api_gateway, "enable_metrics", true)
+  log_level          = lookup(each.value.api_gateway, "log_level", "INFO")
+  log_retention_days = lookup(each.value, "log_retention_days", 14)
+  enable_data_trace  = lookup(each.value.api_gateway, "enable_data_trace", false)
+
+  # Throttling
+  throttling_burst_limit = lookup(each.value.api_gateway, "throttling_burst_limit", 5000)
+  throttling_rate_limit  = lookup(each.value.api_gateway, "throttling_rate_limit", 10000)
+
+  tags = merge(
+    lookup(each.value, "tags", {}),
+    {
+      Name        = "${each.value.name}-${var.environment}-api"
+      Environment = var.environment
+      ManagedBy   = "Terraform"
+    }
+  )
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\prod\lambda\variables.tf =====
+
+variable "aws_region" {
+  type        = string
+  default     = "us-east-1"
+  description = "The AWS region to deploy resources."
+}
+
+variable "environment" {
+  type        = string
+  default     = "prod"
+  description = "The environment name."
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\prod\lambda\versions.tf =====
+
+terraform {
+  required_version = ">= 1.0"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 6.0, < 7"
+    }
+    http = {
+      source  = "hashicorp/http"
+      version = ">= 3.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = var.aws_region
+
+  default_tags {
+    tags = {
+      Environment = "prod"
+      Project     = "chartiq"
+      ManagedBy   = "terraform"
+      Repository  = "spglobal-innersource/chartiq-app-aws-infra"
+      AppID       = "ASP0002996"
+      Owner       = "chartiq-operations-support@spglobal.com"
+      BU          = "MI"
+    }
+  }
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\staging\Makefile =====
+
+GOPATH ?= $(shell go env GOPATH 2>/dev/null || echo $$HOME/go)
+GOBIN ?= $(shell go env GOBIN 2>/dev/null || echo $$(GOPATH)/bin)
+
+ENVIRONMENT := dev
+AWS_REGION := us-east-1
+AWS_ACCOUNT_ID := 745747212857
+
+.PHONY: pr
+pr: fmt validate lint sec
+
+.PHONY: env
+env:
+	@printf '\nENVIRONMENT PARAMETERS\n'
+	@printf '======================\n'
+	@printf 'Environment    : %s\n' $(ENVIRONMENT)
+	@printf 'AWS Region     : %s\n' $(AWS_REGION)
+	@printf 'AWS Account ID : %s\n' $(AWS_ACCOUNT_ID)
+	@printf '\n'
+
+.PHONY: docs
+docs:
+	@if ! command -v terraform-docs &> /dev/null; then \
+		echo "Installing terraform-docs..."; \
+		go install github.com/terraform-docs/terraform-docs@latest; \
+	fi
+	@terraform-docs markdown table . > TERRAFORM_DOCS.md
+	@echo "Documentation generated in TERRAFORM_DOCS.md"
+
+.PHONY: init
+init: env
+	@echo "Initializing Terraform..."
+	@terraform init -upgrade
+
+.PHONY: init-no-backend
+init-no-backend:
+	@echo "Initializing Terraform without backend..."
+	@terraform init -upgrade -backend=false
+
+.PHONY: plan
+plan: init
+	@echo "Creating Terraform plan..."
+	@terraform plan -out=terraform.tfplan
+
+.PHONY: apply
+apply:
+	@echo "Applying Terraform changes..."
+	@if [ ! -f terraform.tfplan ]; then \
+		echo "No plan file found. Running plan first..."; \
+		$(MAKE) plan; \
+	fi
+	@terraform apply terraform.tfplan
+	@rm -f terraform.tfplan
+
+.PHONY: destroy
+destroy: init
+	@echo "WARNING: This will destroy all resources!"
+	@echo "Press Ctrl+C to cancel, or wait 5 seconds to continue..."
+	@sleep 5
+	@terraform destroy
+
+.PHONY: state
+state: env
+	@terraform state list
+
+.PHONY: fmt
+fmt: init-no-backend
+	@echo "Formatting Terraform files..."
+	@terraform fmt -recursive .
+
+.PHONY: validate
+validate: init-no-backend
+	@echo "Validating Terraform configuration..."
+	@terraform validate .
+
+.PHONY: lint
+lint: init-no-backend
+	@echo "Running tflint..."
+	@if ! command -v tflint &> /dev/null; then \
+		echo "Installing tflint..."; \
+		go install github.com/terraform-linters/tflint@latest; \
+	fi
+	@tflint --init
+	@tflint
+
+.PHONY: sec
+sec: init-no-backend
+	@echo "Running security scan with tfsec..."
+	@if ! command -v tfsec &> /dev/null; then \
+		echo "Installing tfsec..."; \
+		go install github.com/aquasecurity/tfsec/cmd/tfsec@latest; \
+	fi
+	@tfsec . --minimum-severity MEDIUM
+
+.PHONY: clean
+clean:
+	@echo "Cleaning Terraform artifacts..."
+	@rm -rf .terraform
+	@rm -f .terraform.lock.hcl
+	@rm -f terraform.tfplan
+	@rm -rf .artifacts
+
+.PHONY: help
+help:
+	@echo "ChartIQ AWS Infrastructure - Development Environment"
+	@echo ""
+	@echo "Available targets:"
+	@echo "  make pr       - Run all pre-commit checks (fmt, validate, lint, sec)"
+	@echo "  make env      - Display environment configuration"
+	@echo "  make init     - Initialize Terraform with backend"
+	@echo "  make plan     - Create Terraform execution plan"
+	@echo "  make apply    - Apply Terraform changes"
+	@echo "  make destroy  - Destroy all Terraform-managed resources"
+	@echo "  make state    - List all resources in state"
+	@echo "  make fmt      - Format Terraform files"
+	@echo "  make validate - Validate Terraform configuration"
+	@echo "  make lint     - Run tflint"
+	@echo "  make sec      - Run security scanning with tfsec"
+	@echo "  make docs     - Generate module documentation"
+	@echo "  make clean    - Remove Terraform artifacts"
+	@echo "  make help     - Show this help message"
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\staging\cloudfront\backend.tf =====
+
+terraform {
+  backend "s3" {
+    bucket       = "state.us-east-1.mi-platform.nonprod"
+    key          = "projects/chartiq-app-aws-infra/staging/terraform.tfstate"
+    region       = "us-east-1"
+    encrypt      = true
+    kms_key_id   = "arn:aws:kms:us-east-1:745747212857:key/f75bfdb2-ad2b-4cb7-8cfd-e83e71e08519"
+    use_lockfile = true
+  }
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\staging\cloudfront\distribution-outputs.tf =====
+
+output "distributions" {
+  value = {
+    for name, dist in module.cloudfront_distributions :
+    name => {
+      id  = dist.id
+      arn = dist.arn
+    }
+  }
+  description = "CloudFront distributions with IDs and ARNs"
+}
+
+output "log_bucket" {
+  value       = var.log_bucket
+  description = "The S3 bucket used for access logs."
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\staging\cloudfront\distributions.tf =====
+
+# Create log bucket for CloudFront and S3 access logs using project-logging module
+# This module has the required permissions for CloudFront logging built-in
+module "log_bucket" {
+  source  = "repo.ihsmarkit.com/terraform__foundation/project-logging/aws"
+  version = ">= 3.0"
+
+  domain = var.log_bucket
+
+  tags = {
+    Purpose     = "logging"
+    Environment = var.environment
+  }
+}
+
+# S3 bucket policy for primary bucket (allows CloudFront access)
+data "aws_iam_policy_document" "primary_bucket" {
+  for_each = local.distributions
+
+  statement {
+    sid    = "AllowCloudFrontServicePrincipal"
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["cloudfront.amazonaws.com"]
+    }
+
+    actions = [
+      "s3:GetObject"
+    ]
+
+    resources = [
+      "arn:aws:s3:::${replace(lookup(each.value, "s3_bucket", "${each.key}-${var.environment}"), ".", "-")}/*"
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "AWS:SourceArn"
+      values   = [module.cloudfront_distributions[each.key].arn]
+    }
+  }
+}
+
+# Create S3 buckets for CloudFront distributions
+module "s3_buckets" {
+  source  = "repo.ihsmarkit.com/terraform__foundation/bucket/aws"
+  version = ">= 7.0"
+
+  for_each = local.distributions
+
+  name            = replace(lookup(each.value, "s3_bucket", "${each.key}-${var.environment}"), ".", "-")
+  force_destroy   = false
+  kms_key_id      = null
+  log_bucket      = "logs.us-east-1.${var.log_bucket}"
+  log_prefix      = "${each.key}/"
+  cloudfront_arns = []
+
+  # Use policy_documents parameter with data source (not cloudfront_arns)
+  policy_documents = [
+    data.aws_iam_policy_document.primary_bucket[each.key].json
+  ]
+
+  lifecycle_rules = {
+    cleanup = {
+      filter                        = { prefix = "" }
+      transition                    = [{ days = 30, storage_class = "INTELLIGENT_TIERING" }]
+      noncurrent_version_transition = [{ noncurrent_days = 7, storage_class = "INTELLIGENT_TIERING" }]
+      noncurrent_version_expiration = { noncurrent_days = 30, newer_noncurrent_versions = 2 }
+    }
+  }
+
+  tags = merge(
+    lookup(each.value, "tags", {}),
+    {
+      Name         = each.key
+      Environment  = var.environment
+      Distribution = each.key
+    }
+  )
+}
+
+# Create CloudFront distributions
+module "cloudfront_distributions" {
+  source   = "../../../modules/cloudfront-distribution"
+  for_each = local.cloudfront_distributions
+
+  name            = each.key
+  domain          = each.value.domain
+  zone_id         = each.value.zone_id
+  dns_names       = each.value.dns_names
+  certificate_arn = each.value.certificate_arn
+  log_bucket      = "logs.us-east-1.${var.log_bucket}"
+
+  s3_bucket_regional_domain_name           = local.bucket_regional_domain_names[each.key]
+  secondary_s3_bucket_regional_domain_name = each.value.secondary_bucket != null ? lookup(local.bucket_regional_domain_names, each.value.secondary_bucket, null) : null
+
+  root_object            = each.value.root_object
+  error_object           = each.value.error_object
+  price_class            = each.value.price_class
+  viewer_protocol_policy = each.value.viewer_protocol_policy
+  enable_spa_handling    = each.value.enable_spa_handling
+
+  oidc_client_id = each.value.oidc_client_id
+  oidc_issuer    = each.value.oidc_issuer
+  oidc_scopes    = each.value.oidc_scopes
+  auth_dns_name  = each.value.auth_dns_name
+
+  failover_criteria = {
+    status_codes = each.value.failover_status_codes
+  }
+
+  custom_headers = each.value.custom_headers
+
+  tags = merge(
+    each.value.tags,
+    {
+      Environment = var.environment
+    }
+  )
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\staging\cloudfront\locals.tf =====
+
+# Load distributions configuration from YAML
+locals {
+  distributions_raw = yamldecode(file(var.distributions_config_file))
+
+  # Extract Route53 Zone ID from config
+  route53_zone_id = local.distributions_raw.route53_zone_id
+
+  # Filter only enabled distributions
+  distributions = {
+    for dist in local.distributions_raw.distributions :
+    dist.name => dist
+    if lookup(dist, "enabled", true)
+  }
+
+  # Bucket regional domain names for CloudFront origin (buckets created in same state using module)
+  bucket_regional_domain_names = {
+    for name, dist in local.distributions :
+    name => "${replace(lookup(dist, "s3_bucket", "${name}-${var.environment}"), ".", "-")}.s3.${var.aws_region}.amazonaws.com"
+  }
+
+  # CloudFront distribution configurations
+  cloudfront_distributions = {
+    for name, dist in local.distributions :
+    name => {
+      domain = dist.domain
+      # Use certificate_arn from config, no auto-creation for local testing
+      certificate_arn        = dist.certificate_arn
+      zone_id                = lookup(lookup(dist, "dns", {}), "zone_id", local.route53_zone_id)
+      dns_names              = lookup(lookup(dist, "dns", {}), "aliases", ["."])
+      root_object            = lookup(lookup(dist, "cloudfront", {}), "root_object", "index.html")
+      error_object           = lookup(lookup(dist, "cloudfront", {}), "error_object", "/index.html")
+      price_class            = lookup(lookup(dist, "cloudfront", {}), "price_class", "PriceClass_100")
+      viewer_protocol_policy = lookup(lookup(dist, "cloudfront", {}), "viewer_protocol_policy", "redirect-to-https")
+      enable_spa_handling    = lookup(lookup(dist, "cloudfront", {}), "enable_spa_handling", true)
+
+      # Authentication
+      oidc_client_id = lookup(lookup(dist, "authentication", {}), "oidc_client_id", null)
+      oidc_issuer    = lookup(lookup(dist, "authentication", {}), "oidc_issuer", "https://sam.ihsmarkit.com:443/sso/oauth2")
+      oidc_scopes    = toset(lookup(lookup(dist, "authentication", {}), "oidc_scopes", ["openid", "email", "profile"]))
+      auth_dns_name  = lookup(lookup(dist, "authentication", {}), "auth_dns_name", null)
+
+      # Failover
+      secondary_bucket      = lookup(lookup(dist, "cloudfront", {}), "secondary_bucket", null)
+      failover_status_codes = toset(lookup(lookup(lookup(dist, "cloudfront", {}), "failover", {}), "status_codes", [500, 502, 503, 504]))
+
+      # Custom headers
+      custom_headers = lookup(dist, "headers", {})
+
+      # Cache configuration
+      cache_min_ttl            = lookup(lookup(lookup(dist, "cloudfront", {}), "cache", {}), "min_ttl", 0)
+      cache_default_ttl        = lookup(lookup(lookup(dist, "cloudfront", {}), "cache", {}), "default_ttl", 0)
+      cache_max_ttl            = lookup(lookup(lookup(dist, "cloudfront", {}), "cache", {}), "max_ttl", 0)
+      use_managed_cache_policy = lookup(lookup(dist, "cloudfront", {}), "use_managed_cache_policy", false)
+      cache_policy_id          = lookup(lookup(dist, "cloudfront", {}), "cache_policy_id", null)
+      origin_request_policy_id = lookup(lookup(dist, "cloudfront", {}), "origin_request_policy_id", null)
+
+      # Tags
+      tags = lookup(dist, "tags", {})
+    }
+  }
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\staging\cloudfront\variables.tf =====
+
+variable "aws_region" {
+  type        = string
+  default     = "us-east-1"
+  description = "The AWS region to deploy resources."
+}
+
+variable "environment" {
+  type        = string
+  default     = "staging"
+  description = "The environment name."
+}
+
+variable "log_bucket" {
+  type        = string
+  default     = "chartiq-cloudfront-logs-staging"
+  description = "The S3 bucket for CloudFront and S3 access logs."
+}
+
+variable "distributions_config_file" {
+  type        = string
+  default     = "../../../config/staging/distributions.yaml"
+  description = "Path to the YAML file containing distribution configurations."
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\staging\cloudfront\versions.tf =====
+
+terraform {
+  required_version = ">= 1.0"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 6.0, < 7"
+    }
+    http = {
+      source  = "hashicorp/http"
+      version = ">= 3.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = var.aws_region
+
+  default_tags {
+    tags = {
+      Environment = "staging"
+      Project     = "chartiq"
+      ManagedBy   = "terraform"
+      Repository  = "spglobal-innersource/chartiq-app-aws-infra"
+      AppID       = "ASP0002996"
+      Owner       = "chartiq-operations-support@spglobal.com"
+      BU          = "MI"
+    }
+  }
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\staging\lambda\backend.tf =====
+
+terraform {
+  backend "s3" {
+    bucket       = "state.us-east-1.mi-platform.nonprod"
+    key          = "projects/chartiq-app-aws-infra/staging/lambda/terraform.tfstate"
+    region       = "us-east-1"
+    encrypt      = true
+    kms_key_id   = "arn:aws:kms:us-east-1:745747212857:key/f75bfdb2-ad2b-4cb7-8cfd-e83e71e08519"
+    use_lockfile = true
+  }
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\staging\lambda\lambda-outputs.tf =====
+
+# Lambda Outputs
+
+output "lambda_function_arns" {
+  description = "ARNs of all Lambda functions"
+  value = {
+    for k, v in module.lambda_functions : k => v.arn
+  }
+}
+
+output "lambda_function_names" {
+  description = "Names of all Lambda functions"
+  value = {
+    for k, v in module.lambda_functions : k => v.name
+  }
+}
+
+output "lambda_role_arns" {
+  description = "IAM Role ARNs for Lambda functions"
+  value = {
+    for k, v in module.lambda_functions : k => v.role.arn
+  }
+}
+
+# API Gateway Outputs
+
+output "api_gateway_ids" {
+  description = "IDs of API Gateways for Lambda functions"
+  value = {
+    for k, v in module.api_gateway : k => v.api_id
+  }
+}
+
+output "api_gateway_invoke_urls" {
+  description = "Invoke URLs for API Gateways (Lambda endpoints)"
+  value = {
+    for k, v in module.api_gateway : k => v.invoke_url
+  }
+}
+
+output "api_gateway_execution_arns" {
+  description = "Execution ARNs for API Gateways"
+  value = {
+    for k, v in module.api_gateway : k => v.execution_arn
+  }
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\staging\lambda\lambda.tf =====
+
+# Lambda Functions Configuration
+# Lambda functions with optional API Gateway integration
+
+locals {
+  lambda_config = try(yamldecode(file("../../../config/${var.environment}/lambdas.yaml")), { lambdas = [] })
+  lambdas       = { for lambda in local.lambda_config.lambdas : lambda.name => lambda }
+
+  # Filter lambdas with API Gateway enabled
+  api_gateway_lambdas = { for k, v in local.lambdas : k => v if lookup(lookup(v, "api_gateway", {}), "enabled", false) }
+}
+
+# Lambda Functions (foundation module handles IAM roles automatically)
+module "lambda_functions" {
+  source  = "repo.ihsmarkit.com/terraform__foundation/lambda/aws"
+  version = ">= 4.0"
+
+  for_each = local.lambdas
+
+  name        = "${each.value.name}-${var.environment}"
+  description = lookup(each.value, "description", "Lambda function for ${each.value.name}")
+
+  runtime     = each.value.runtime
+  handler     = each.value.handler
+  timeout     = lookup(each.value, "timeout", 30)
+  memory_size = lookup(each.value, "memory_size", 256)
+
+  # Code deployment from S3
+  deployment = {
+    package_type = "zip"
+    zip = {
+      bucket = {
+        name = each.value.s3_bucket
+        key  = each.value.s3_key
+      }
+    }
+  }
+
+  # Environment variables
+  env = lookup(each.value, "environment_variables", null)
+
+  # Tags from YAML config only (module handles Name, Environment, ManagedBy automatically)
+  tags = lookup(each.value, "tags", {})
+}
+
+# API Gateway for Lambda Functions (optional)
+# Creates API Gateway REST API for each Lambda function that has API Gateway enabled
+module "api_gateway" {
+  source = "../../../modules/api-gateway"
+
+  for_each = local.api_gateway_lambdas
+
+  name        = "${each.value.name}-${var.environment}-api"
+  description = "API Gateway for ${each.value.name}"
+
+  # Lambda integration
+  lambda_invoke_arn    = module.lambda_functions[each.key].invoke_arn
+  lambda_function_name = module.lambda_functions[each.key].name
+
+  # API Gateway configuration from lambdas.yaml
+  path_part   = lookup(each.value.api_gateway, "path", each.value.name)
+  http_method = lookup(each.value.api_gateway, "http_method", "ANY")
+  stage_name  = lookup(each.value.api_gateway, "stage_name", var.environment)
+
+  # Monitoring and logging
+  enable_xray        = lookup(each.value.api_gateway, "enable_xray", true)
+  enable_metrics     = lookup(each.value.api_gateway, "enable_metrics", true)
+  log_level          = lookup(each.value.api_gateway, "log_level", "INFO")
+  log_retention_days = lookup(each.value, "log_retention_days", 14)
+  enable_data_trace  = lookup(each.value.api_gateway, "enable_data_trace", false)
+
+  # Throttling
+  throttling_burst_limit = lookup(each.value.api_gateway, "throttling_burst_limit", 5000)
+  throttling_rate_limit  = lookup(each.value.api_gateway, "throttling_rate_limit", 10000)
+
+  tags = merge(
+    lookup(each.value, "tags", {}),
+    {
+      Name        = "${each.value.name}-${var.environment}-api"
+      Environment = var.environment
+      ManagedBy   = "Terraform"
+    }
+  )
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\staging\lambda\variables.tf =====
+
+variable "aws_region" {
+  type        = string
+  default     = "us-east-1"
+  description = "The AWS region to deploy resources."
+}
+
+variable "environment" {
+  type        = string
+  default     = "staging"
+  description = "The environment name."
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\environments\staging\lambda\versions.tf =====
+
+terraform {
+  required_version = ">= 1.0"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 6.0, < 7"
+    }
+    http = {
+      source  = "hashicorp/http"
+      version = ">= 3.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = var.aws_region
+
+  default_tags {
+    tags = {
+      Environment = "staging"
+      Project     = "chartiq"
+      ManagedBy   = "terraform"
+      Repository  = "spglobal-innersource/chartiq-app-aws-infra"
+      AppID       = "ASP0002996"
+      Owner       = "chartiq-operations-support@spglobal.com"
+      BU          = "MI"
+    }
+  }
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\iam-roles\dev\backend.tf =====
+
+terraform {
+  backend "s3" {
+    bucket       = "state.us-east-1.mi-platform.nonprod"
+    key          = "projects/chartiq-app-aws-infra/iam-roles/dev/terraform.tfstate"
+    region       = "us-east-1"
+    encrypt      = true
+    kms_key_id   = "arn:aws:kms:us-east-1:745747212857:key/f75bfdb2-ad2b-4cb7-8cfd-e83e71e08519"
+    use_lockfile = true
+  }
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\iam-roles\dev\locals.tf =====
+
+locals {
+  aws_account_id = "745747212857"
+  environment    = "dev"
+  github_repo    = "spglobal-innersource/chartiq-app-aws-infra"
+  region         = "us-east-1"
+
+  tags = {
+    Environment      = "dev"
+    Application      = "ChartIQ"
+    Product          = "ChartIQ"
+    BU               = "MI"
+    Team             = "Platform"
+    ManagedBy        = "Terraform"
+    Purpose          = "GitHub Actions OIDC"
+    AppID            = "ASP0002996"
+    "owner/cto"      = "chartiq-operations-support@spglobal.com"
+    "ops/repository" = "https://github.com/spglobal-innersource/chartiq-app-aws-infra"
+  }
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\iam-roles\dev\main.tf =====
+
+# ==============================================================================
+# GitHub Actions IAM Role for ChartIQ Infrastructure Deployment - DEV
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# GitHub Actions OIDC Assume Role Policy
+# ------------------------------------------------------------------------------
+data "aws_iam_policy_document" "assume_by_github_actions" {
+  statement {
+    effect = "Allow"
+    principals {
+      type        = "Federated"
+      identifiers = ["arn:aws:iam::${local.aws_account_id}:oidc-provider/token.actions.githubusercontent.com"]
+    }
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:aud"
+      values   = ["sts.amazonaws.com"]
+    }
+
+    condition {
+      test     = "StringLike"
+      variable = "token.actions.githubusercontent.com:sub"
+      values   = ["repo:${local.github_repo}:*"]
+    }
+  }
+}
+
+# ------------------------------------------------------------------------------
+# AWS Managed Policy - AdministratorAccess
+# ------------------------------------------------------------------------------
+data "aws_iam_policy" "administrator_access" {
+  arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+}
+
+# ------------------------------------------------------------------------------
+# GitHub Actions Role for ChartIQ
+# ------------------------------------------------------------------------------
+module "chartiq_github_actions_role" {
+  source  = "repo.ihsmarkit.com/terraform__foundation/role/aws"
+  version = "3.6.0"
+
+  name        = "chartiq-github-actions-${local.environment}-role"
+  description = "Role for GitHub Actions to deploy ChartIQ CloudFront infrastructure (${upper(local.environment)})"
+
+  policy_arns = [
+    data.aws_iam_policy.administrator_access.arn
+  ]
+
+  assume_role_policy_document = data.aws_iam_policy_document.assume_by_github_actions.json
+
+  tags = local.tags
+}
+
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\iam-roles\dev\provider.tf =====
+
+terraform {
+  required_version = ">= 1.5.0"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 5.0.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = "us-east-1"
+
+  default_tags {
+    tags = local.tags
+  }
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\iam-roles\prod\backend.tf =====
+
+terraform {
+  backend "s3" {
+    bucket       = "state.us-east-1.mi-platform.prod"
+    key          = "projects/chartiq-app-aws-infra/iam-roles/prod/terraform.tfstate"
+    region       = "us-east-1"
+    encrypt      = true
+    kms_key_id   = "arn:aws:kms:us-east-1:541729437036:alias/mi-platform-state"
+    use_lockfile = true
+  }
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\iam-roles\prod\locals.tf =====
+
+locals {
+  aws_account_id = "541729437036"
+  environment    = "prod"
+  github_repo    = "spglobal-innersource/chartiq-app-aws-infra"
+  region         = "us-east-1"
+
+  tags = {
+    Environment      = "prod"
+    Application      = "ChartIQ"
+    Product          = "ChartIQ"
+    BU               = "MI"
+    Team             = "Platform"
+    ManagedBy        = "Terraform"
+    Purpose          = "GitHub Actions OIDC"
+    AppID            = "ASP0002996"
+    "owner/cto"      = "chartiq-operations-support@spglobal.com"
+    "ops/repository" = "https://github.com/spglobal-innersource/chartiq-app-aws-infra"
+  }
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\iam-roles\prod\main.tf =====
+
+# ==============================================================================
+# GitHub Actions IAM Role for ChartIQ Infrastructure Deployment - PROD
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# GitHub Actions OIDC Assume Role Policy
+# ------------------------------------------------------------------------------
+data "aws_iam_policy_document" "assume_by_github_actions" {
+  statement {
+    effect = "Allow"
+    principals {
+      type        = "Federated"
+      identifiers = ["arn:aws:iam::${local.aws_account_id}:oidc-provider/token.actions.githubusercontent.com"]
+    }
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:aud"
+      values   = ["sts.amazonaws.com"]
+    }
+
+    condition {
+      test     = "StringLike"
+      variable = "token.actions.githubusercontent.com:sub"
+      values   = ["repo:${local.github_repo}:*"]
+    }
+  }
+}
+
+# ------------------------------------------------------------------------------
+# AWS Managed Policy - AdministratorAccess
+# ------------------------------------------------------------------------------
+data "aws_iam_policy" "administrator_access" {
+  arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+}
+
+# ------------------------------------------------------------------------------
+# GitHub Actions Role for ChartIQ
+# ------------------------------------------------------------------------------
+module "chartiq_github_actions_role" {
+  source  = "repo.ihsmarkit.com/terraform__foundation/role/aws"
+  version = "3.6.0"
+
+  name        = "chartiq-github-actions-${local.environment}-role"
+  description = "Role for GitHub Actions to deploy ChartIQ CloudFront infrastructure (${upper(local.environment)})"
+
+  policy_arns = [
+    data.aws_iam_policy.administrator_access.arn
+  ]
+
+  assume_role_policy_document = data.aws_iam_policy_document.assume_by_github_actions.json
+
+  tags = local.tags
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\iam-roles\prod\provider.tf =====
+
+terraform {
+  required_version = ">= 1.5.0"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 5.0.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = "us-east-1"
+
+  default_tags {
+    tags = local.tags
+  }
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\lambda-code\index.py =====
+
+import json
+
+def lambda_handler(event, context):
+    """
+    Simple Hello World Lambda function
+    """
+    print(f"Event received: {json.dumps(event)}")
+    
+    return {
+        'statusCode': 200,
+        'headers': {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+        },
+        'body': json.dumps({
+            'message': 'Hello from ChartIQ Lambda Function!',
+            'environment': 'dev',
+            'event': event
+        })
+    }
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\modules\api-gateway\main.tf =====
+
+# API Gateway REST API
+resource "aws_api_gateway_rest_api" "api" {
+  name        = var.name
+  description = var.description
+
+  endpoint_configuration {
+    types = ["REGIONAL"]
+  }
+
+  tags = var.tags
+}
+
+# API Gateway Deployment
+resource "aws_api_gateway_deployment" "deployment" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+
+  triggers = {
+    redeployment = sha1(jsonencode([
+      aws_api_gateway_resource.resource,
+      aws_api_gateway_method.method,
+      aws_api_gateway_integration.integration,
+    ]))
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  depends_on = [
+    aws_api_gateway_integration.integration,
+  ]
+}
+
+# API Gateway Stage
+resource "aws_api_gateway_stage" "stage" {
+  deployment_id = aws_api_gateway_deployment.deployment.id
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  stage_name    = var.stage_name
+
+  xray_tracing_enabled = var.enable_xray
+
+  access_log_settings {
+    destination_arn = aws_cloudwatch_log_group.access_logs.arn
+    format = jsonencode({
+      requestId      = "$context.requestId"
+      ip             = "$context.identity.sourceIp"
+      requestTime    = "$context.requestTime"
+      httpMethod     = "$context.httpMethod"
+      resourcePath   = "$context.resourcePath"
+      status         = "$context.status"
+      protocol       = "$context.protocol"
+      responseLength = "$context.responseLength"
+    })
+  }
+
+  tags = var.tags
+}
+
+# API Gateway Resource (path)
+resource "aws_api_gateway_resource" "resource" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  parent_id   = aws_api_gateway_rest_api.api.root_resource_id
+  path_part   = var.path_part
+}
+
+# API Gateway Method
+resource "aws_api_gateway_method" "method" {
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  resource_id   = aws_api_gateway_resource.resource.id
+  http_method   = var.http_method
+  authorization = "NONE"
+}
+
+# API Gateway Integration with Lambda
+resource "aws_api_gateway_integration" "integration" {
+  rest_api_id             = aws_api_gateway_rest_api.api.id
+  resource_id             = aws_api_gateway_resource.resource.id
+  http_method             = aws_api_gateway_method.method.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = var.lambda_invoke_arn
+}
+
+# Lambda Permission for API Gateway
+resource "aws_lambda_permission" "api_gateway" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = var.lambda_function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*"
+}
+
+# CloudWatch Log Group for Access Logs
+resource "aws_cloudwatch_log_group" "access_logs" {
+  name              = "/aws/apigateway/${var.name}-access-logs"
+  retention_in_days = var.log_retention_days
+  tags              = var.tags
+}
+
+# CloudWatch Log Group for Execution Logs
+resource "aws_cloudwatch_log_group" "execution_logs" {
+  name              = "API-Gateway-Execution-Logs_${aws_api_gateway_rest_api.api.id}/${var.stage_name}"
+  retention_in_days = var.log_retention_days
+  tags              = var.tags
+}
+
+# API Gateway Method Settings
+resource "aws_api_gateway_method_settings" "settings" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  stage_name  = aws_api_gateway_stage.stage.stage_name
+  method_path = "*/*"
+
+  settings {
+    metrics_enabled        = var.enable_metrics
+    logging_level          = var.log_level
+    data_trace_enabled     = var.enable_data_trace
+    throttling_burst_limit = var.throttling_burst_limit
+    throttling_rate_limit  = var.throttling_rate_limit
+  }
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\modules\api-gateway\outputs.tf =====
+
+output "api_id" {
+  value       = aws_api_gateway_rest_api.api.id
+  description = "The ID of the REST API Gateway"
+}
+
+output "api_arn" {
+  value       = aws_api_gateway_rest_api.api.arn
+  description = "The ARN of the REST API Gateway"
+}
+
+output "execution_arn" {
+  value       = aws_api_gateway_rest_api.api.execution_arn
+  description = "The execution ARN of the REST API Gateway"
+}
+
+output "invoke_url" {
+  value       = "${aws_api_gateway_stage.stage.invoke_url}/${var.path_part}"
+  description = "The URL to invoke the API Gateway"
+}
+
+output "stage_name" {
+  value       = aws_api_gateway_stage.stage.stage_name
+  description = "The name of the deployment stage"
+}
+
+output "stage_arn" {
+  value       = aws_api_gateway_stage.stage.arn
+  description = "The ARN of the deployment stage"
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\modules\api-gateway\variables.tf =====
+
+variable "name" {
+  type        = string
+  description = "Name for the API Gateway"
+}
+
+variable "description" {
+  type        = string
+  default     = ""
+  description = "Description for the API Gateway"
+}
+
+variable "stage_name" {
+  type        = string
+  default     = "dev"
+  description = "Deployment stage name"
+}
+
+variable "path_part" {
+  type        = string
+  description = "Path part for the API Gateway resource (e.g., 'api', 'v1')"
+}
+
+variable "http_method" {
+  type        = string
+  default     = "ANY"
+  description = "HTTP method for the API Gateway method"
+}
+
+variable "lambda_invoke_arn" {
+  type        = string
+  description = "Invoke ARN of the Lambda function to integrate with"
+}
+
+variable "lambda_function_name" {
+  type        = string
+  description = "Name of the Lambda function"
+}
+
+variable "enable_xray" {
+  type        = bool
+  default     = true
+  description = "Enable X-Ray tracing"
+}
+
+variable "enable_metrics" {
+  type        = bool
+  default     = true
+  description = "Enable detailed metrics per API"
+}
+
+variable "log_level" {
+  type        = string
+  default     = "INFO"
+  description = "Log level - OFF, INFO, ERROR"
+  validation {
+    condition     = contains(["OFF", "INFO", "ERROR"], var.log_level)
+    error_message = "The log_level value must be OFF, INFO, or ERROR."
+  }
+}
+
+variable "log_retention_days" {
+  type        = number
+  default     = 14
+  description = "Number of days to retain logs"
+}
+
+variable "enable_data_trace" {
+  type        = bool
+  default     = false
+  description = "Log full requests/responses data"
+}
+
+variable "throttling_burst_limit" {
+  type        = number
+  default     = 5000
+  description = "Throttling burst limit"
+}
+
+variable "throttling_rate_limit" {
+  type        = number
+  default     = 10000
+  description = "Throttling rate limit"
+}
+
+variable "tags" {
+  type        = map(string)
+  default     = {}
+  description = "Additional tags associated with the API Gateway"
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\modules\cloudfront-distribution\main.tf =====
+
+module "distribution" {
+  source  = "repo.ihsmarkit.com/terraform__foundation/static-web-distribution/aws"
+  version = "6.0.0"
+
+  domain          = var.domain
+  dns_names       = var.dns_names
+  zone_id         = var.zone_id
+  certificate_arn = var.certificate_arn
+  log_bucket      = var.log_bucket
+
+  origins = var.secondary_s3_bucket_regional_domain_name != null ? {
+    primary = {
+      regional_domain_name = var.s3_bucket_regional_domain_name
+    }
+    secondary = {
+      regional_domain_name = var.secondary_s3_bucket_regional_domain_name
+    }
+    } : {
+    primary = {
+      regional_domain_name = var.s3_bucket_regional_domain_name
+    }
+  }
+
+  root_object            = var.root_object
+  error_object           = var.error_object
+  price_class            = var.price_class
+  viewer_protocol_policy = var.viewer_protocol_policy
+  enable_spa_handling    = var.enable_spa_handling
+
+  oidc_client_id = var.oidc_client_id
+  oidc_issuer    = var.oidc_issuer
+  oidc_scopes    = var.oidc_scopes
+  auth_dns_name  = var.auth_dns_name
+
+  failover_criteria = var.failover_criteria
+
+  headers = var.custom_headers
+
+  tags = merge(
+    var.tags,
+    {
+      # Note: blueprint adds lowercase 'name' tag, avoid uppercase 'Name' to prevent duplicate
+      ManagedBy    = "terraform"
+      Module       = "cloudfront-distribution"
+      Distribution = var.name
+    }
+  )
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\modules\cloudfront-distribution\outputs.tf =====
+
+output "id" {
+  value       = module.distribution.id
+  description = "The ID of the CloudFront distribution."
+}
+
+output "arn" {
+  value       = module.distribution.arn
+  description = "The ARN of the CloudFront distribution."
+}
+
+output "domain_name" {
+  value       = module.distribution.dns_name
+  description = "The domain name of the CloudFront distribution."
+}
+
+output "zone_id" {
+  value       = module.distribution.zone_id
+  description = "The CloudFront zone ID."
+}
+
+output "aliases" {
+  value       = module.distribution.aliases
+  description = "The list of domain aliases."
+}
+
+output "dns_records" {
+  value       = module.distribution.dns
+  description = "The DNS records created for the distribution."
+}
+
+output "oidc_config" {
+  value       = module.distribution.oidc
+  description = "The OIDC configuration."
+  sensitive   = true
+}
+
+output "auth_config" {
+  value       = module.distribution.auth
+  description = "The authentication configuration."
+}
+
+output "etag" {
+  value       = module.distribution.etag
+  description = "The current etag of the distribution."
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\modules\cloudfront-distribution\README.md =====
+
+# CloudFront Distribution Module
+
+This module creates a complete CloudFront distribution with all required dependencies.
+
+## Features
+
+- CloudFront distribution with Origin Access Control (OAC)
+- Lambda@Edge functions for headers, authentication, and SPA handling
+- Route53 DNS records
+- IAM roles and policies
+- CloudWatch log groups
+
+## Usage
+
+```hcl
+module "cloudfront_distribution" {
+  source = "../../modules/cloudfront-distribution"
+
+  name                = "my-app"
+  domain              = "my-app.example.com"
+  zone_id             = "Z1234567890ABC"
+  certificate_arn     = "arn:aws:acm:us-east-1:123456789012:certificate/xxx"
+  log_bucket          = "logs-bucket"
+  s3_bucket_regional_domain_name = "my-bucket.s3.us-east-1.amazonaws.com"
+
+  # Optional
+  enable_spa_handling = true
+  oidc_client_id      = "my-client-id"
+  
+  tags = {
+    Environment = "dev"
+    Project     = "chartiq"
+  }
+}
+```
+
+## Requirements
+
+| Name | Version |
+|------|---------|
+| terraform | >= 1.0 |
+| aws | >= 6.0, < 7 |
+
+## Inputs
+
+See [variables.tf](variables.tf) for all available inputs.
+
+## Outputs
+
+See [outputs.tf](outputs.tf) for all available outputs.
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\modules\cloudfront-distribution\variables.tf =====
+
+variable "name" {
+  type        = string
+  nullable    = false
+  description = "The name of the distribution. Used for resource naming and tagging."
+}
+
+variable "domain" {
+  type        = string
+  nullable    = false
+  description = "The fully-qualified domain name for the distribution."
+}
+
+variable "s3_bucket_regional_domain_name" {
+  type        = string
+  nullable    = false
+  description = "The regional domain name of the S3 bucket origin."
+}
+
+variable "secondary_s3_bucket_regional_domain_name" {
+  type        = string
+  nullable    = true
+  default     = null
+  description = "The regional domain name of the secondary S3 bucket for failover."
+}
+
+variable "zone_id" {
+  type        = string
+  nullable    = true
+  default     = null
+  description = "The Route 53 hosted zone ID. If not provided, will be looked up by domain."
+}
+
+variable "dns_names" {
+  type        = list(string)
+  default     = ["."]
+  description = "List of DNS names to create. Default ['.'] creates root domain record."
+}
+
+variable "certificate_arn" {
+  type        = string
+  nullable    = false
+  description = "The ARN of the ACM certificate (must be in us-east-1)."
+}
+
+variable "log_bucket" {
+  type        = string
+  nullable    = true
+  default     = null
+  description = "The name of the S3 bucket for access logs."
+}
+
+variable "root_object" {
+  type        = string
+  default     = "index.html"
+  description = "The default root object for the distribution."
+}
+
+variable "error_object" {
+  type        = string
+  default     = "/index.html"
+  description = "The error page object (useful for SPAs)."
+}
+
+variable "price_class" {
+  type        = string
+  default     = "PriceClass_100"
+  description = "The CloudFront price class."
+  validation {
+    condition     = can(regex("^PriceClass_(100|200|All)$", var.price_class))
+    error_message = "Price class must be PriceClass_100, PriceClass_200, or PriceClass_All."
+  }
+}
+
+variable "viewer_protocol_policy" {
+  type        = string
+  default     = "redirect-to-https"
+  description = "The viewer protocol policy."
+  validation {
+    condition     = contains(["allow-all", "https-only", "redirect-to-https"], var.viewer_protocol_policy)
+    error_message = "Viewer protocol policy must be allow-all, https-only, or redirect-to-https."
+  }
+}
+
+variable "enable_spa_handling" {
+  type        = bool
+  default     = true
+  description = "Enable single-page application handling (returns index.html for 404s)."
+}
+
+variable "oidc_client_id" {
+  type        = string
+  nullable    = true
+  default     = null
+  description = "OIDC client ID for authentication. If null, authentication is disabled."
+}
+
+variable "oidc_issuer" {
+  type        = string
+  default     = "https://sam.ihsmarkit.com:443/sso/oauth2"
+  description = "The OIDC issuer URL."
+}
+
+variable "oidc_scopes" {
+  type        = set(string)
+  default     = ["openid", "email", "profile"]
+  description = "The OIDC scopes to request."
+}
+
+variable "auth_dns_name" {
+  type        = string
+  nullable    = true
+  default     = null
+  description = "The DNS name for authentication endpoint."
+}
+
+variable "failover_criteria" {
+  type = object({
+    status_codes = optional(set(number), [404, 500, 502, 503, 504])
+  })
+  default     = {}
+  description = "Failover criteria for secondary origin."
+}
+
+variable "custom_headers" {
+  type        = map(string)
+  default     = {}
+  description = "Custom HTTP headers to add to responses."
+}
+
+variable "tags" {
+  type        = map(string)
+  default     = {}
+  description = "Tags to apply to all resources."
+}
+
+variable "enabled" {
+  type        = bool
+  default     = true
+  description = "Whether the distribution is enabled."
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\modules\cloudfront-distribution\versions.tf =====
+
+terraform {
+  required_version = ">= 1.0"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 6.0, < 7"
+    }
+  }
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\modules\lambda-function\main.tf =====
+
+resource "aws_lambda_function" "this" {
+  function_name = var.function_name
+  description   = var.description
+  role          = var.execution_role_arn
+
+  # Code deployment
+  filename          = var.filename
+  s3_bucket         = var.s3_bucket
+  s3_key            = var.s3_key
+  s3_object_version = var.s3_object_version
+  source_code_hash  = var.source_code_hash
+
+  # Runtime configuration
+  handler       = var.handler
+  runtime       = var.runtime
+  architectures = var.architectures
+  timeout       = var.timeout
+  memory_size   = var.memory_size
+
+  # Environment variables
+  dynamic "environment" {
+    for_each = length(var.environment_variables) > 0 ? [1] : []
+    content {
+      variables = var.environment_variables
+    }
+  }
+
+  # VPC configuration
+  dynamic "vpc_config" {
+    for_each = var.vpc_config != null ? [var.vpc_config] : []
+    content {
+      subnet_ids         = vpc_config.value.subnet_ids
+      security_group_ids = vpc_config.value.security_group_ids
+    }
+  }
+
+  # Dead letter queue
+  dynamic "dead_letter_config" {
+    for_each = var.dead_letter_config_target_arn != null ? [1] : []
+    content {
+      target_arn = var.dead_letter_config_target_arn
+    }
+  }
+
+  # Tracing
+  dynamic "tracing_config" {
+    for_each = var.tracing_mode != null ? [1] : []
+    content {
+      mode = var.tracing_mode
+    }
+  }
+
+  # Layers
+  layers = var.layers
+
+  # Reserved concurrent executions
+  reserved_concurrent_executions = var.reserved_concurrent_executions
+
+  tags = var.tags
+
+  lifecycle {
+    ignore_changes = [
+      filename,
+      source_code_hash,
+    ]
+  }
+}
+
+# CloudWatch Log Group
+resource "aws_cloudwatch_log_group" "lambda" {
+  name              = "/aws/lambda/${var.function_name}"
+  retention_in_days = var.log_retention_days
+  kms_key_id        = var.cloudwatch_logs_kms_key_id
+
+  tags = var.tags
+}
+
+# Lambda Permission for triggers
+resource "aws_lambda_permission" "triggers" {
+  for_each = var.triggers
+
+  statement_id  = each.key
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.this.function_name
+  principal     = each.value.principal
+  source_arn    = each.value.source_arn
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\modules\lambda-function\outputs.tf =====
+
+output "function_arn" {
+  description = "ARN of the Lambda function"
+  value       = aws_lambda_function.this.arn
+}
+
+output "function_name" {
+  description = "Name of the Lambda function"
+  value       = aws_lambda_function.this.function_name
+}
+
+output "function_qualified_arn" {
+  description = "Qualified ARN of the Lambda function"
+  value       = aws_lambda_function.this.qualified_arn
+}
+
+output "function_invoke_arn" {
+  description = "Invoke ARN of the Lambda function"
+  value       = aws_lambda_function.this.invoke_arn
+}
+
+output "function_version" {
+  description = "Latest published version of the Lambda function"
+  value       = aws_lambda_function.this.version
+}
+
+output "log_group_name" {
+  description = "Name of the CloudWatch Log Group"
+  value       = aws_cloudwatch_log_group.lambda.name
+}
+
+output "log_group_arn" {
+  description = "ARN of the CloudWatch Log Group"
+  value       = aws_cloudwatch_log_group.lambda.arn
+}
+
+===== FILE: C:\WORKING-PRO\chartiq-app-aws-infra\modules\lambda-function\variables.tf =====
+
+variable "function_name" {
+  description = "Name of the Lambda function"
+  type        = string
+}
+
+variable "description" {
+  description = "Description of the Lambda function"
+  type        = string
+  default     = ""
+}
+
+variable "execution_role_arn" {
+  description = "ARN of the IAM role for Lambda execution"
+  type        = string
+}
+
+# Code deployment
+variable "filename" {
+  description = "Path to the function's deployment package within the local filesystem"
+  type        = string
+  default     = null
+}
+
+variable "s3_bucket" {
+  description = "S3 bucket containing the function's deployment package"
+  type        = string
+  default     = null
+}
+
+variable "s3_key" {
+  description = "S3 key of the function's deployment package"
+  type        = string
+  default     = null
+}
+
+variable "s3_object_version" {
+  description = "Object version containing the function's deployment package"
+  type        = string
+  default     = null
+}
+
+variable "source_code_hash" {
+  description = "Base64-encoded SHA256 hash of the package file"
+  type        = string
+  default     = null
+}
+
+# Runtime configuration
+variable "handler" {
+  description = "Function entrypoint in your code"
+  type        = string
+}
+
+variable "runtime" {
+  description = "Runtime environment for the Lambda function"
+  type        = string
+}
+
+variable "architectures" {
+  description = "Instruction set architecture for the Lambda function"
+  type        = list(string)
+  default     = ["x86_64"]
+}
+
+variable "timeout" {
+  description = "Amount of time your Lambda Function has to run in seconds"
+  type        = number
+  default     = 3
+}
+
+variable "memory_size" {
+  description = "Amount of memory in MB your Lambda Function can use at runtime"
+  type        = number
+  default     = 128
+}
+
+# Environment
+variable "environment_variables" {
+  description = "Map of environment variables for the Lambda function"
+  type        = map(string)
+  default     = {}
+}
+
+# VPC
+variable "vpc_config" {
+  description = "VPC configuration for the Lambda function"
+  type = object({
+    subnet_ids         = list(string)
+    security_group_ids = list(string)
+  })
+  default = null
+}
+
+# Dead letter queue
+variable "dead_letter_config_target_arn" {
+  description = "ARN of an SNS topic or SQS queue to notify when invocation fails"
+  type        = string
+  default     = null
+}
+
+# Tracing
+variable "tracing_mode" {
+  description = "Tracing mode of the Lambda function (PassThrough or Active)"
+  type        = string
+  default     = null
+}
+
+# Layers
+variable "layers" {
+  description = "List of Lambda Layer ARNs to attach to the function"
+  type        = list(string)
+  default     = []
+}
+
+# Concurrency
+variable "reserved_concurrent_executions" {
+  description = "Amount of reserved concurrent executions for the Lambda function"
+  type        = number
+  default     = -1
+}
+
+# CloudWatch Logs
+variable "log_retention_days" {
+  description = "CloudWatch Logs retention in days"
+  type        = number
+  default     = 14
+}
+
+variable "cloudwatch_logs_kms_key_id" {
+  description = "KMS key ID to use for encrypting CloudWatch Logs"
+  type        = string
+  default     = null
+}
+
+# Triggers
+variable "triggers" {
+  description = "Map of trigger configurations for the Lambda function"
+  type = map(object({
+    principal  = string
+    source_arn = string
+  }))
+  default = {}
+}
+
+variable "tags" {
+  description = "Tags to apply to resources"
+  type        = map(string)
+  default     = {}
+}
+
