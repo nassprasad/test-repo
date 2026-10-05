@@ -1,0 +1,126 @@
+# S3 + CloudFront Legacy Infrastructure Migration
+
+## Objective
+
+Clean up the legacy S3 + CloudFront infrastructure and migrate required websites to the new standardized blueprint, using **CloudFront OAC** instead of the legacy **OAI** configuration.
+
+## Key Goals
+
+### 1. Inventory All Existing S3/CloudFront Resources
+
+- Identify legacy resources across **non-prod** and **prod**.
+- Current numbers discussed:
+  - Platform Non-Prod: **~96**
+  - Platform Prod: **~59**
+
+### 2. Classify Each Resource
+
+| Status | Description |
+|---|---|
+| 🗑️ **Retire/Delete** | Resources that are no longer required. |
+| 🔄 **Migrate/Recreate** | Resources that are still required but are running on legacy infrastructure. |
+| ❓ **Product Decision Required** | Resources where ownership or whether the resource is still required is unclear. |
+
+### 3. Use the Existing Blueprint
+
+- Create each required S3 bucket and CloudFront distribution using the supported blueprint/module.
+- Avoid creating a new custom migration framework unless there is a specific deadline requiring it.
+
+### 4. Move from OAI → OAC
+
+- New CloudFront distributions must use **Origin Access Control (OAC)**.
+- S3 bucket policies should follow the current security guidelines.
+- This should also address the relevant **Wiz security/misconfiguration findings**.
+
+### 5. Migrate S3 Content
+
+- Copy the existing bucket contents to the newly created bucket.
+- Use scripting/AWS CLI where appropriate for data migration.
+
+Example:
+
+```bash
+aws s3 sync s3://<old-bucket> s3://<new-bucket>
+```
+
+### 6. Handle Route 53 Carefully
+
+- Existing Route 53 records currently point to the old CloudFront distribution.
+- Because the blueprint also creates Route 53 records, the existing DNS entry needs to be handled manually during the migration to avoid conflicts.
+- Once the new CloudFront distribution is validated, point DNS to the new distribution.
+
+### 7. Validate
+
+Before removing the legacy infrastructure, verify:
+
+- S3 content
+- CloudFront configuration
+- OAC/S3 permissions
+- Route 53/DNS
+- Website functionality
+
+### 8. Remove Legacy Infrastructure
+
+After successful validation, delete the old:
+
+- S3 bucket
+- CloudFront distribution
+- Legacy Route 53 configuration, where applicable
+- Other obsolete legacy resources
+
+### 9. Keep Everything Future-Facing
+
+- New resources should be represented in the new **Terraform/blueprint state**.
+- Future changes should be managed through the **CI/CD pipeline** rather than manually through the AWS Console.
+
+---
+
+## What Was Not Selected
+
+The team discussed creating a script to directly modify:
+
+```text
+OAI → OAC
+```
+
+along with the required S3 bucket policy changes.
+
+This approach was **not selected for now**.
+
+### Reason
+
+- Do not spend additional time building a shortcut when there is already a team working on the clean blueprint migration.
+- The standardized blueprint provides the desired future state.
+- If management later provides a hard deadline, the CLI/script-based approach can be reconsidered.
+
+---
+
+## Immediate Priority
+
+### Start with Non-Prod
+
+The immediate priority is to establish the migration pattern in **non-production**.
+
+### Expected Sequence
+
+```text
+Establish Migration Pattern
+          ↓
+Migrate Non-Prod
+          ↓
+Validate
+          ↓
+Plan Production Migration
+          ↓
+Production Change Window
+          ↓
+Migrate Production
+```
+
+The non-prod migration should be used to prove the approach before starting the production migration.
+
+---
+
+## Migration Summary
+
+> **Retire what we don't need, recreate what we do need using the standard S3/CloudFront OAC blueprint, migrate the content and DNS, validate, and then remove the legacy infrastructure.**
